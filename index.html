@@ -420,23 +420,23 @@
     .game-card-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 20px;
+      align-items: start;
     }
 
     .game-card-column {
       display: grid;
       grid-template-rows: repeat(5, minmax(0, auto));
       gap: 12px;
-      align-content: start;
     }
 
     .game-card {
       position: relative;
-      border-radius: 18px;
-      padding: 12px;
+      border-radius: 16px;
+      padding: 6px;
       background: var(--card-bg);
       border: 2px solid transparent;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
       transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -450,12 +450,17 @@
 
     .game-card-main {
       width: 100%;
+      min-height: 68px;
       border: none;
       background: rgba(255, 255, 255, 0.6);
-      border-radius: 14px;
-      padding: 14px 12px;
-      font-size: 1.05rem;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 1rem;
       font-weight: 600;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       color: var(--fg);
       cursor: pointer;
@@ -561,7 +566,7 @@
       }
 
       .game-card-grid {
-        gap: 14px;
+        gap: 16px;
       }
 
       .game-card-column {
@@ -569,12 +574,13 @@
       }
 
       .game-card {
-        padding: 10px;
+        padding: 4px;
       }
 
       .game-card-main {
-        font-size: 1rem;
-        padding: 12px 10px;
+        min-height: 60px;
+        padding: 10px 8px;
+        font-size: 0.95rem;
       }
 
       .phrase-table thead {
@@ -630,7 +636,7 @@
       }
 
       .game-card-grid {
-        gap: 12px;
+        gap: 14px;
       }
 
       .game-card-column {
@@ -638,11 +644,12 @@
       }
 
       .game-card {
-        padding: 12px;
+        padding: 4px;
       }
 
       .game-card-main {
-        font-size: 1.05rem;
+        min-height: 56px;
+        font-size: 0.95rem;
       }
     }
 
@@ -2026,11 +2033,11 @@
 
       const labelText = lang === 'ja' ? '日本語カード' : 'オランダ語カード';
       const displayText = lang === 'ja' ? phrase.ja : phrase.nl;
-      const ariaHint =
+      const actionHint =
         lang === 'nl'
-          ? '（タップすると発音が再生されます）'
-          : '（タップしてペアのカードを探しましょう）';
-      mainButton.setAttribute('aria-label', `${labelText}: ${displayText}${ariaHint}`);
+          ? '。タップするとオランダ語の発音が再生されます。'
+          : '。タップして対応するカードを見つけましょう。';
+      mainButton.setAttribute('aria-label', `${labelText}: ${displayText}${actionHint}`);
 
       if (lang === 'nl') {
         mainButton.title = 'タップするとオランダ語の発音が再生されます';
@@ -2061,6 +2068,24 @@
       return column;
     };
 
+    const rebuildGameColumns = () => {
+      if (!gameGrid) {
+        return null;
+      }
+
+      gameGrid.innerHTML = '';
+
+      const dutchColumn = createCardColumn('nl');
+      const japaneseColumn = createCardColumn('ja');
+
+      const fragment = document.createDocumentFragment();
+      fragment.append(dutchColumn, japaneseColumn);
+
+      gameGrid.appendChild(fragment);
+
+      return { dutchColumn, japaneseColumn };
+    };
+
     const resetGame = (announce = true) => {
       gameState.stage = 0;
       gameState.score = 0;
@@ -2072,7 +2097,8 @@
       updateScoreboard();
 
       if (gameGrid) {
-        gameGrid.innerHTML = '';
+        rebuildGameColumns();
+        gameGrid.removeAttribute('aria-busy');
       }
 
       if (startButton) {
@@ -2238,20 +2264,21 @@
       );
 
       gameGrid.setAttribute('aria-busy', 'true');
-      gameGrid.innerHTML = '';
 
-      const dutchColumn = createCardColumn('nl');
-      const japaneseColumn = createCardColumn('ja');
+      const columns = rebuildGameColumns();
+
+      if (!columns) {
+        gameGrid.removeAttribute('aria-busy');
+        return;
+      }
+
+      const { dutchColumn, japaneseColumn } = columns;
 
       cards.forEach(({ phrase, lang }) => {
         const targetColumn = lang === 'nl' ? dutchColumn : japaneseColumn;
         targetColumn.appendChild(createGameCard(phrase, lang));
       });
 
-      const fragment = document.createDocumentFragment();
-      fragment.append(dutchColumn, japaneseColumn);
-
-      gameGrid.appendChild(fragment);
       gameGrid.removeAttribute('aria-busy');
 
       gameState.stage = nextStage;
