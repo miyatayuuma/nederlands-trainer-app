@@ -2147,6 +2147,69 @@
       setStatus(`✨ ステージ${gameState.stage}クリア！ボーナス${bonus}点を獲得したよ。`);
     };
 
+    let feedbackAudioContext = null;
+
+    const ensureFeedbackAudioContext = () => {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        return null;
+      }
+
+      if (!feedbackAudioContext) {
+        try {
+          feedbackAudioContext = new AudioContextClass();
+        } catch (error) {
+          feedbackAudioContext = null;
+          return null;
+        }
+      }
+
+      if (feedbackAudioContext.state === 'suspended') {
+        feedbackAudioContext.resume().catch(() => {
+          /* noop */
+        });
+      }
+
+      return feedbackAudioContext;
+    };
+
+    const playMatchFeedbackTone = (isMatch) => {
+      const context = ensureFeedbackAudioContext();
+
+      if (!context) {
+        return;
+      }
+
+      try {
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        const now = context.currentTime;
+
+        oscillator.type = 'sine';
+
+        if (isMatch) {
+          oscillator.frequency.setValueAtTime(660, now);
+          oscillator.frequency.exponentialRampToValueAtTime(990, now + 0.18);
+        } else {
+          oscillator.frequency.setValueAtTime(240, now);
+          oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.18);
+        }
+
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.18, now + 0.04);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+      } catch (error) {
+        /* noop */
+      }
+    };
+
     const evaluateSelection = ({ didSpeak = false } = {}) => {
       if (gameState.selection.length < 2) {
         return;
@@ -2162,6 +2225,7 @@
       };
 
       if (isMatch) {
+        playMatchFeedbackTone(true);
         const phrase = PHRASE_LOOKUP.get(first.pairId);
         [first.card, second.card].forEach((card) => {
           card.classList.remove('is-selected');
@@ -2197,6 +2261,7 @@
         return;
       }
 
+      playMatchFeedbackTone(false);
       gameState.streak = 0;
       updateScoreboard();
       pulseElement(streakDisplay);
