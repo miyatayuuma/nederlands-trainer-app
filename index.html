@@ -138,99 +138,91 @@
       line-height: 1.6;
     }
 
-    .phrase-list {
-      list-style: none;
-      margin: 24px 0 0;
-      padding: 0;
+    .phrase-dutch {
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .phrase-note {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .phrase-actions {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(31, 41, 51, 0.16);
+      background: rgba(31, 41, 51, 0.04);
+      color: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      background: rgba(31, 41, 51, 0.1);
+      border-color: rgba(31, 41, 51, 0.32);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .icon-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .icon-button.is-active,
+    .icon-button.is-recording {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .speech-support {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    .phrase-list li {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 12px;
-      align-items: center;
-      font-size: 1rem;
-      line-height: 1.8;
-    }
-
-    .phrase-original {
-      font-weight: 600;
-    }
-
-    .phrase-translation {
-      color: var(--muted);
-    }
-
-    .toggle-translation {
-      padding: 4px 12px;
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: white;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s ease-in-out;
-    }
-
-    .toggle-translation:hover,
-    .toggle-translation:focus {
-      background: var(--accent-dark);
-    }
-
-    .toggle-translation:focus {
-      outline: 2px solid rgba(255, 122, 89, 0.3);
-      outline-offset: 2px;
-    }
-
-    .speak-phrase,
-    .recognize-phrase {
-      padding: 4px 12px;
-      border-radius: 999px;
-      border: none;
-      background: rgba(31, 41, 51, 0.1);
-      color: var(--fg);
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
-    }
-
-    .speak-phrase:hover,
-    .speak-phrase:focus,
-    .recognize-phrase:hover,
-    .recognize-phrase:focus {
-      background: rgba(31, 41, 51, 0.18);
-    }
-
-    .speak-phrase:disabled,
-    .recognize-phrase:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .recognition-panel {
+    .speech-feedback {
       border-radius: 16px;
       background: rgba(31, 41, 51, 0.06);
       padding: 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      display: grid;
+      gap: 8px;
       font-size: 0.9rem;
     }
 
-    .recognition-panel strong {
+    .speech-feedback p {
+      margin: 0;
+    }
+
+    .speech-feedback strong {
       font-weight: 600;
       color: var(--fg);
     }
 
-    .recognition-panel span {
+    .speech-feedback span {
       word-break: break-word;
     }
 
-    .recognition-notice {
-      margin-top: 12px;
+    .speech-notice {
+      margin: 0;
       font-size: 0.9rem;
       color: var(--muted);
     }
@@ -428,6 +420,11 @@
       transition: background 0.2s ease, transform 0.15s ease;
     }
 
+    .card-action.is-active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
     .card-action:hover,
     .card-action:focus-visible {
       background: rgba(31, 41, 51, 0.2);
@@ -587,6 +584,15 @@
         color: var(--muted);
         margin-bottom: 4px;
       }
+
+      .phrase-actions {
+        margin-top: 10px;
+      }
+
+      .icon-button {
+        width: 34px;
+        height: 34px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -682,20 +688,23 @@
             </ul>
           </section>
 
-          <section class="card">
-            <h2>日常フレーズ集</h2>
+          <section class="card speech-support">
+            <h2>音声サポート</h2>
+            <p>
+              フレーズ一覧のスピーカーアイコンから読み上げ、マイクアイコンから発声チェックを実行できます。必要に応じて再生速
+              度を調整してください。
+            </p>
             <div class="speech-controls">
               <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
               <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
             </div>
-            <ul class="phrase-list" data-phrase-list></ul>
-            <div id="recognition-panel" class="recognition-panel is-hidden" aria-live="polite">
-              <p class="recognition-status"><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えて「発声テスト」を押すと発音チェックができます。</span></p>
-              <p class="recognition-target"><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
-              <p class="recognition-result"><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
-              <p class="recognition-score"><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
+            <div id="speech-feedback" class="speech-feedback is-hidden" aria-live="polite">
+              <p><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えてマイクアイコンを押すと発音チェックができます。</span></p>
+              <p><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
+              <p><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
+              <p><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
             </div>
-            <p id="speech-recognition-notice" class="recognition-notice is-hidden" aria-live="polite"></p>
+            <p id="speech-recognition-notice" class="speech-notice is-hidden" aria-live="polite"></p>
           </section>
 
           <section class="card phrase-section">
@@ -709,35 +718,185 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td data-label="日本語"><strong>おはようございます。</strong>丁寧な朝の挨拶</td>
-                  <td data-label="オランダ語">Goedemorgen.</td>
-                  <td data-label="カタカナ・発音ヒント">フーデモルヘン /ɣudəˈmɔr.ɣə(n)/</td>
+                <tr data-phrase-id="greet-morning">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">丁寧な朝の挨拶</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-morning"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-morning"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>こんにちは。</strong>日中の挨拶</td>
-                  <td data-label="オランダ語">Goedemiddag.</td>
-                  <td data-label="カタカナ・発音ヒント">フーデミダフ /ɣudəˈmɪdɑx/</td>
+                <tr data-phrase-id="greet-day">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">日中の挨拶</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-day"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-day"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>こんばんは。</strong>夕方以降の挨拶</td>
-                  <td data-label="オランダ語">Goedenavond.</td>
-                  <td data-label="カタカナ・発音ヒント">フーデナーフォント /ɣudəˈnaːvɔnt/</td>
+                <tr data-phrase-id="greet-evening">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">夕方以降の挨拶</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-evening"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-evening"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>はじめまして。</strong>初対面の挨拶</td>
-                  <td data-label="オランダ語">Aangenaam.</td>
-                  <td data-label="カタカナ・発音ヒント">アーネナーム /ˈaːŋɣənaːm/</td>
+                <tr data-phrase-id="greet-meet">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">初対面の挨拶</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-meet"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-meet"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>さようなら。</strong>別れの挨拶</td>
-                  <td data-label="オランダ語">Tot ziens.</td>
-                  <td data-label="カタカナ・発音ヒント">トッツィンス /tɔt ˈzins/</td>
+                <tr data-phrase-id="greet-bye">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">別れの挨拶</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-bye"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-bye"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>また後でね。</strong>カジュアルな別れ</td>
-                  <td data-label="オランダ語">Tot later.</td>
-                  <td data-label="カタカナ・発音ヒント">トト ラーテル /tɔt ˈlaːtər/</td>
+                <tr data-phrase-id="greet-later">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">カジュアルな別れ</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="greet-later"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="greet-later"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -754,40 +913,211 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td data-label="日本語"><strong>駅はどこですか？</strong>場所を尋ねる</td>
-                  <td data-label="オランダ語">Waar is het station?</td>
-                  <td data-label="カタカナ・発音ヒント">ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/</td>
+                <tr data-phrase-id="travel-station">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">場所を尋ねる</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-station"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-station"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>この列車はアムステルダム行きですか？</strong></td>
-                  <td data-label="オランダ語">Gaat deze trein naar Amsterdam?</td>
-                  <td data-label="カタカナ・発音ヒント">ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/</td>
+                <tr data-phrase-id="travel-train">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-train"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-train"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>切符を2枚ください。</strong></td>
-                  <td data-label="オランダ語">Mag ik twee kaartjes alstublieft?</td>
-                  <td data-label="カタカナ・発音ヒント">マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/</td>
+                <tr data-phrase-id="travel-ticket">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-ticket"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-ticket"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>チェックインをお願いします。</strong>ホテルで</td>
-                  <td data-label="オランダ語">Ik wil graag inchecken.</td>
-                  <td data-label="カタカナ・発音ヒント">イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/</td>
+                <tr data-phrase-id="travel-checkin">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">ホテルで</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-checkin"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-checkin"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>おすすめのレストランはありますか？</strong></td>
-                  <td data-label="オランダ語">Heeft u een aanbeveling voor een restaurant?</td>
-                  <td data-label="カタカナ・発音ヒント">ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/</td>
+                <tr data-phrase-id="travel-restaurant">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-restaurant"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-restaurant"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>助けが必要です。</strong>緊急時</td>
-                  <td data-label="オランダ語">Ik heb hulp nodig.</td>
-                  <td data-label="カタカナ・発音ヒント">イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/</td>
+                <tr data-phrase-id="emergency-help">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                    <span class="phrase-note">緊急時</span>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="emergency-help"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="emergency-help"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
-                <tr>
-                  <td data-label="日本語"><strong>トイレはどこですか？</strong></td>
-                  <td data-label="オランダ語">Waar is het toilet?</td>
-                  <td data-label="カタカナ・発音ヒント">ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/</td>
+                <tr data-phrase-id="travel-restroom">
+                  <td data-label="日本語">
+                    <strong data-phrase-field="ja"></strong>
+                  </td>
+                  <td data-label="オランダ語">
+                    <span class="phrase-dutch" data-phrase-field="nl"></span>
+                    <div class="phrase-actions" role="group" aria-label="音声操作">
+                      <button
+                        type="button"
+                        class="icon-button speak-control"
+                        data-phrase-id="travel-restroom"
+                        aria-label="オランダ語フレーズを再生"
+                      >
+                        <span aria-hidden="true">🔊</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-button recognize-control"
+                        data-phrase-id="travel-restroom"
+                        aria-label="オランダ語フレーズの発声をテスト"
+                      >
+                        <span aria-hidden="true">🎤</span>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="カタカナ・発音ヒント">
+                    <span data-phrase-field="hint"></span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -961,6 +1291,58 @@
 
     const PHRASE_LOOKUP = new Map(PHRASE_DATA.map((phrase) => [phrase.id, phrase]));
 
+    const initializePhraseTables = () => {
+      const rows = document.querySelectorAll('[data-phrase-id]');
+
+      rows.forEach((row) => {
+        const phraseId = row.getAttribute('data-phrase-id');
+
+        if (!phraseId) {
+          return;
+        }
+
+        const phrase = PHRASE_LOOKUP.get(phraseId);
+
+        if (!phrase) {
+          return;
+        }
+
+        row.querySelectorAll('[data-phrase-field]').forEach((field) => {
+          const fieldName = field.getAttribute('data-phrase-field');
+
+          if (fieldName === 'ja') {
+            field.textContent = phrase.ja;
+          } else if (fieldName === 'nl') {
+            field.textContent = phrase.nl;
+          } else if (fieldName === 'hint') {
+            field.textContent = phrase.hint ?? '―';
+          }
+        });
+
+        const speakButton = row.querySelector('.speak-control');
+
+        if (speakButton) {
+          const speakLabel = `「${phrase.ja}」をオランダ語で再生`;
+          speakButton.dataset.phraseId = phrase.id;
+          speakButton.dataset.defaultLabel = speakLabel;
+          speakButton.dataset.activeLabel = `「${phrase.ja}」を再生中`;
+          speakButton.setAttribute('aria-label', speakLabel);
+        }
+
+        const recognizeButton = row.querySelector('.recognize-control');
+
+        if (recognizeButton) {
+          const recognizeLabel = `マイクで「${phrase.nl}」（${phrase.ja}）を発声してみよう`;
+          recognizeButton.dataset.phraseId = phrase.id;
+          recognizeButton.dataset.defaultLabel = recognizeLabel;
+          recognizeButton.dataset.activeLabel = `「${phrase.nl}」を録音中`;
+          recognizeButton.setAttribute('aria-label', recognizeLabel);
+        }
+      });
+    };
+
+    initializePhraseTables();
+
     const shuffleArray = (input) => {
       const array = [...input];
 
@@ -971,67 +1353,6 @@
 
       return array;
     };
-
-    const phraseListElement = document.querySelector('[data-phrase-list]');
-
-    const renderStudyList = () => {
-      if (!phraseListElement) {
-        return;
-      }
-
-      phraseListElement.innerHTML = '';
-
-      const featuredPhrases = PHRASE_DATA.filter((phrase) => phrase.featured);
-      const fragment = document.createDocumentFragment();
-
-      featuredPhrases.forEach((phrase) => {
-        const item = document.createElement('li');
-        item.dataset.phraseId = phrase.id;
-
-        const original = document.createElement('span');
-        original.className = 'phrase-original';
-        original.textContent = phrase.ja;
-
-        const translation = document.createElement('span');
-        translation.className = 'phrase-translation is-hidden';
-        translation.textContent = phrase.nl;
-
-        const speakButton = document.createElement('button');
-        speakButton.type = 'button';
-        speakButton.className = 'speak-phrase speak-control';
-        speakButton.dataset.speech = phrase.nl;
-        speakButton.dataset.defaultLabel = '再生';
-        speakButton.dataset.activeLabel = '再生中…';
-        speakButton.setAttribute('aria-label', `${phrase.ja} をオランダ語で再生`);
-        speakButton.textContent = '再生';
-
-        const recognizeButton = document.createElement('button');
-        recognizeButton.type = 'button';
-        recognizeButton.className = 'recognize-phrase';
-        recognizeButton.dataset.target = phrase.nl;
-        recognizeButton.setAttribute('aria-label', `${phrase.nl} を発音してみよう`);
-        recognizeButton.textContent = '発声テスト';
-
-        const toggleButton = document.createElement('button');
-        toggleButton.type = 'button';
-        toggleButton.className = 'toggle-translation';
-        toggleButton.textContent = '訳を表示';
-
-        toggleButton.addEventListener('click', () => {
-          translation.classList.toggle('is-hidden');
-          toggleButton.textContent = translation.classList.contains('is-hidden')
-            ? '訳を表示'
-            : '訳を隠す';
-        });
-
-        item.append(original, translation, speakButton, recognizeButton, toggleButton);
-        fragment.appendChild(item);
-      });
-
-      phraseListElement.appendChild(fragment);
-    };
-
-    renderStudyList();
 
     const modeContainer = document.querySelector('.main-container');
     const modeButtons = modeContainer
@@ -1145,21 +1466,21 @@
       const resetActiveButton = () => {
         if (activeButton) {
           activeButton.disabled = false;
-          const defaultLabel = activeButton.dataset.defaultLabel ?? '再生';
-          activeButton.textContent = defaultLabel;
+          activeButton.classList.remove('is-active');
+          const defaultLabel =
+            activeButton.dataset.defaultLabel ?? 'オランダ語フレーズを再生';
+          activeButton.setAttribute('aria-label', defaultLabel);
           activeButton = null;
         }
       };
 
       const speakFromButton = (button) => {
-        const dutchText = button.dataset.speech?.trim();
+        const phraseId = button.dataset.phraseId;
+        const phrase = phraseId ? PHRASE_LOOKUP.get(phraseId) : null;
+        const dutchText = phrase?.nl?.trim();
 
-        if (!dutchText) {
+        if (!phrase || !dutchText) {
           return;
-        }
-
-        if (!button.dataset.defaultLabel) {
-          button.dataset.defaultLabel = button.textContent;
         }
 
         if (synthesis.speaking || synthesis.pending) {
@@ -1185,23 +1506,21 @@
 
         utterance.onend = () => {
           if (activeButton === button) {
-            button.disabled = false;
-            button.textContent = button.dataset.defaultLabel ?? '再生';
-            activeButton = null;
+            resetActiveButton();
           }
         };
 
         utterance.onerror = () => {
           if (activeButton === button) {
-            button.disabled = false;
-            button.textContent = button.dataset.defaultLabel ?? '再生';
-            activeButton = null;
+            resetActiveButton();
           }
         };
 
         activeButton = button;
         button.disabled = true;
-        button.textContent = button.dataset.activeLabel ?? '再生中…';
+        button.classList.add('is-active');
+        const activeLabel = button.dataset.activeLabel ?? '再生中…';
+        button.setAttribute('aria-label', activeLabel);
 
         synthesis.speak(utterance);
       };
@@ -1230,13 +1549,13 @@
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognitionNotice = document.getElementById('speech-recognition-notice');
-    const recognitionPanel = document.getElementById('recognition-panel');
+    const speechFeedback = document.getElementById('speech-feedback');
     const recognitionStatus = document.getElementById('recognition-status');
     const recognitionTarget = document.getElementById('recognition-target');
     const recognitionText = document.getElementById('recognition-text');
     const recognitionScore = document.getElementById('recognition-score');
 
-    const defaultStatusMessage = 'マイクの許可を与えて「発声テスト」を押すと発音チェックができます。';
+    const defaultStatusMessage = 'マイクの許可を与えてマイクアイコンを押すと発音チェックができます。';
 
     const sanitizePhrase = (text) =>
       text
@@ -1288,20 +1607,33 @@
 
     if (
       recognitionNotice &&
-      recognitionPanel &&
+      speechFeedback &&
       recognitionStatus &&
       recognitionTarget &&
       recognitionText &&
       recognitionScore
     ) {
       if (!SpeechRecognition) {
+        document.querySelectorAll('.recognize-control').forEach((button) => {
+          const defaultLabel = button.dataset.defaultLabel || button.getAttribute('aria-label');
+          if (defaultLabel) {
+            button.setAttribute('aria-label', `${defaultLabel} (音声認識は利用できません)`);
+          }
+          button.disabled = true;
+        });
         recognitionNotice.textContent =
           'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
         recognitionNotice.classList.remove('is-hidden');
-        recognitionPanel.classList.add('is-hidden');
+        speechFeedback.classList.add('is-hidden');
       } else {
-        recognitionPanel.classList.remove('is-hidden');
-        recognitionNotice.textContent = '初回利用時はブラウザのマイク許可が求められます。';
+        document.querySelectorAll('.recognize-control').forEach((button) => {
+          if (button.dataset.defaultLabel) {
+            button.setAttribute('aria-label', button.dataset.defaultLabel);
+          }
+          button.disabled = false;
+        });
+        speechFeedback.classList.remove('is-hidden');
+        recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
         recognitionNotice.classList.remove('is-hidden');
         recognitionStatus.textContent = defaultStatusMessage;
 
@@ -1317,7 +1649,10 @@
         const releaseRecognitionButton = () => {
           if (activeRecognitionButton) {
             activeRecognitionButton.disabled = false;
-            activeRecognitionButton.textContent = '発声テスト';
+            activeRecognitionButton.classList.remove('is-recording');
+            const defaultLabel =
+              activeRecognitionButton.dataset.defaultLabel ?? 'オランダ語フレーズの発声をテスト';
+            activeRecognitionButton.setAttribute('aria-label', defaultLabel);
             activeRecognitionButton = null;
           }
         };
@@ -1358,7 +1693,7 @@
         });
 
         const handleRecognitionClick = (event) => {
-          const button = event.target.closest('.recognize-phrase');
+          const button = event.target.closest('.recognize-control');
 
           if (!button) {
             return;
@@ -1367,9 +1702,11 @@
           event.preventDefault();
           event.stopPropagation();
 
-          const dutchText = button.dataset.target?.trim();
+          const phraseId = button.dataset.phraseId;
+          const phrase = phraseId ? PHRASE_LOOKUP.get(phraseId) : null;
+          const dutchText = phrase?.nl?.trim();
 
-          if (!dutchText) {
+          if (!phrase || !dutchText) {
             return;
           }
 
@@ -1389,7 +1726,9 @@
 
           activeRecognitionButton = button;
           button.disabled = true;
-          button.textContent = '録音中…';
+          button.classList.add('is-recording');
+          const activeLabel = button.dataset.activeLabel ?? '録音中…';
+          button.setAttribute('aria-label', activeLabel);
 
           try {
             recognition.start();
@@ -1526,10 +1865,10 @@
       const speakButton = document.createElement('button');
       speakButton.type = 'button';
       speakButton.className = 'card-action speak-control';
-      speakButton.dataset.speech = phrase.nl;
-      speakButton.dataset.defaultLabel = '🔊';
-      speakButton.dataset.activeLabel = '🔄';
-      speakButton.setAttribute('aria-label', `${phrase.ja} のオランダ語を再生`);
+      speakButton.dataset.phraseId = phrase.id;
+      speakButton.dataset.defaultLabel = `${phrase.ja} のオランダ語を再生`;
+      speakButton.dataset.activeLabel = `${phrase.ja} のオランダ語を再生中`;
+      speakButton.setAttribute('aria-label', speakButton.dataset.defaultLabel);
       speakButton.textContent = '🔊';
 
       const hintButton = document.createElement('button');
