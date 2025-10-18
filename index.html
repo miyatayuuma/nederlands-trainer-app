@@ -22,6 +22,11 @@
         --card-bg: #16203a;
         --muted: #8ea4c4;
       }
+
+      .speech-feedback {
+        background: rgba(148, 163, 184, 0.12);
+        border-color: rgba(148, 163, 184, 0.2);
+      }
     }
 
     * {
@@ -193,38 +198,25 @@
       color: #fff;
     }
 
-    .speech-support {
+    .speech-toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-    }
-
-    .speech-feedback {
-      border-radius: 16px;
-      background: rgba(31, 41, 51, 0.06);
+      gap: 12px;
       padding: 16px 18px;
-      display: grid;
-      gap: 8px;
-      font-size: 0.9rem;
+      border-radius: 18px;
+      background: var(--card-bg);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
     }
 
-    .speech-feedback p {
-      margin: 0;
-    }
-
-    .speech-feedback strong {
-      font-weight: 600;
-      color: var(--fg);
-    }
-
-    .speech-feedback span {
-      word-break: break-word;
-    }
-
-    .speech-notice {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--muted);
+    .speech-toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: stretch;
     }
 
     .speech-controls {
@@ -234,14 +226,59 @@
       flex-wrap: wrap;
       font-size: 0.9rem;
       color: var(--muted);
+      flex: 1 1 200px;
+    }
+
+    .speech-controls label {
+      font-weight: 600;
+      color: var(--fg);
     }
 
     .speech-controls input[type="range"] {
       accent-color: var(--accent);
+      min-width: 140px;
+    }
+
+    .speech-feedback {
+      flex: 1 1 280px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      font-size: 0.9rem;
+      background: rgba(15, 23, 42, 0.05);
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .speech-feedback-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .speech-feedback-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .speech-feedback-value {
+      font-weight: 600;
+      color: var(--fg);
+      word-break: break-word;
+    }
+
+    .speech-notice {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
 
     .is-hidden {
-      visibility: hidden;
+      display: none !important;
     }
 
     .phrase-section {
@@ -688,25 +725,41 @@
             </ul>
           </section>
 
-          <section class="card speech-support">
-            <h2>音声サポート</h2>
-            <p>
-              フレーズ一覧のスピーカーアイコンから読み上げ、マイクアイコンから発声チェックを実行できます。必要に応じて再生速
-              度を調整してください。
-            </p>
-            <div class="speech-controls">
-              <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
-              <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
-            </div>
-            <div id="speech-feedback" class="speech-feedback is-hidden" aria-live="polite">
-              <p><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えてマイクアイコンを押すと発音チェックができます。</span></p>
-              <p><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
-              <p><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
-              <p><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
+          <section class="speech-toolbar" aria-label="音声サポート">
+            <div class="speech-toolbar-row">
+              <div class="speech-controls">
+                <label for="speech-rate">再生速度 <span id="speech-rate-value">1.0x</span></label>
+                <input
+                  type="range"
+                  id="speech-rate"
+                  name="speech-rate"
+                  min="0.6"
+                  max="1.4"
+                  step="0.1"
+                  value="1"
+                >
+              </div>
+              <div id="speech-feedback" class="speech-feedback" aria-live="polite">
+                <div class="speech-feedback-item">
+                  <span class="speech-feedback-label">状態</span>
+                  <span id="recognition-status" class="speech-feedback-value">マイクの許可を与えてマイクアイコンを押すと発音チェックができます。</span>
+                </div>
+                <div class="speech-feedback-item">
+                  <span class="speech-feedback-label">フレーズ</span>
+                  <span id="recognition-target" class="speech-feedback-value">-</span>
+                </div>
+                <div class="speech-feedback-item">
+                  <span class="speech-feedback-label">認識結果</span>
+                  <span id="recognition-text" class="speech-feedback-value">-</span>
+                </div>
+                <div class="speech-feedback-item">
+                  <span class="speech-feedback-label">マッチ率</span>
+                  <span id="recognition-score" class="speech-feedback-value">-</span>
+                </div>
+              </div>
             </div>
             <p id="speech-recognition-notice" class="speech-notice is-hidden" aria-live="polite"></p>
           </section>
-
           <section class="card phrase-section">
             <h3>挨拶</h3>
             <table class="phrase-table">
@@ -1438,6 +1491,24 @@
 
     const rateSlider = document.getElementById('speech-rate');
     const rateValue = document.getElementById('speech-rate-value');
+    const speechFeedback = document.getElementById('speech-feedback');
+    const recognitionStatus = document.getElementById('recognition-status');
+    const recognitionTarget = document.getElementById('recognition-target');
+    const recognitionText = document.getElementById('recognition-text');
+    const recognitionScore = document.getElementById('recognition-score');
+    const recognitionNotice = document.getElementById('speech-recognition-notice');
+
+    const defaultStatusMessage =
+      recognitionStatus?.textContent?.trim() ||
+      'マイクの許可を与えてマイクアイコンを押すと発音チェックができます。';
+
+    if (recognitionStatus) {
+      recognitionStatus.dataset.defaultMessage = defaultStatusMessage;
+      recognitionStatus.dataset.state = recognitionStatus.dataset.state || 'idle';
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (rateSlider && rateValue) {
       const updateRateLabel = () => {
@@ -1453,6 +1524,30 @@
       let availableVoices = [];
       let activeButton = null;
 
+      const restoreStatusAfterSpeech = () => {
+        if (
+          recognitionStatus &&
+          recognitionStatus.dataset.state === 'speaking'
+        ) {
+          const previous =
+            recognitionStatus.dataset.previousStatus || defaultStatusMessage;
+          recognitionStatus.textContent = previous;
+          recognitionStatus.dataset.state = 'idle';
+          delete recognitionStatus.dataset.previousStatus;
+        }
+      };
+
+      const markStatusForSpeech = () => {
+        if (!recognitionStatus) {
+          return;
+        }
+
+        recognitionStatus.dataset.previousStatus =
+          recognitionStatus.textContent?.trim() || defaultStatusMessage;
+        recognitionStatus.dataset.state = 'speaking';
+        recognitionStatus.textContent = '再生中です…';
+      };
+
       const refreshVoices = () => {
         availableVoices = synthesis
           .getVoices()
@@ -1464,6 +1559,8 @@
       };
 
       const resetActiveButton = () => {
+        restoreStatusAfterSpeech();
+
         if (activeButton) {
           activeButton.disabled = false;
           activeButton.classList.remove('is-active');
@@ -1504,13 +1601,27 @@
           utterance.voice = selectedVoice;
         }
 
+        if (speechFeedback) {
+          speechFeedback.classList.remove('is-hidden');
+        }
+
+        if (recognitionTarget) {
+          recognitionTarget.textContent = dutchText;
+        }
+
+        markStatusForSpeech();
+
         utterance.onend = () => {
+          restoreStatusAfterSpeech();
+
           if (activeButton === button) {
             resetActiveButton();
           }
         };
 
         utterance.onerror = () => {
+          restoreStatusAfterSpeech();
+
           if (activeButton === button) {
             resetActiveButton();
           }
@@ -1546,16 +1657,6 @@
       synthesis.addEventListener('voiceschanged', refreshVoices);
       document.addEventListener('click', handleSpeakClick);
     }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognitionNotice = document.getElementById('speech-recognition-notice');
-    const speechFeedback = document.getElementById('speech-feedback');
-    const recognitionStatus = document.getElementById('recognition-status');
-    const recognitionTarget = document.getElementById('recognition-target');
-    const recognitionText = document.getElementById('recognition-text');
-    const recognitionScore = document.getElementById('recognition-score');
-
-    const defaultStatusMessage = 'マイクの許可を与えてマイクアイコンを押すと発音チェックができます。';
 
     const sanitizePhrase = (text) =>
       text
@@ -1605,37 +1706,41 @@
       return longest === 0 ? 1 : 1 - distance / longest;
     };
 
-    if (
-      recognitionNotice &&
-      speechFeedback &&
-      recognitionStatus &&
-      recognitionTarget &&
-      recognitionText &&
-      recognitionScore
-    ) {
-      if (!SpeechRecognition) {
-        document.querySelectorAll('.recognize-control').forEach((button) => {
-          const defaultLabel = button.dataset.defaultLabel || button.getAttribute('aria-label');
-          if (defaultLabel) {
-            button.setAttribute('aria-label', `${defaultLabel} (音声認識は利用できません)`);
-          }
-          button.disabled = true;
-        });
-        recognitionNotice.textContent =
-          'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
-        recognitionNotice.classList.remove('is-hidden');
-        speechFeedback.classList.add('is-hidden');
-      } else {
-        document.querySelectorAll('.recognize-control').forEach((button) => {
-          if (button.dataset.defaultLabel) {
-            button.setAttribute('aria-label', button.dataset.defaultLabel);
-          }
-          button.disabled = false;
-        });
-        speechFeedback.classList.remove('is-hidden');
-        recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
-        recognitionNotice.classList.remove('is-hidden');
-        recognitionStatus.textContent = defaultStatusMessage;
+      if (
+        recognitionNotice &&
+        speechFeedback &&
+        recognitionStatus &&
+        recognitionTarget &&
+        recognitionText &&
+        recognitionScore
+      ) {
+        if (!SpeechRecognition) {
+          document.querySelectorAll('.recognize-control').forEach((button) => {
+            const defaultLabel = button.dataset.defaultLabel || button.getAttribute('aria-label');
+            if (defaultLabel) {
+              button.setAttribute('aria-label', `${defaultLabel} (音声認識は利用できません)`);
+            }
+            button.disabled = true;
+          });
+          recognitionNotice.textContent =
+            'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
+          recognitionNotice.classList.remove('is-hidden');
+          recognitionStatus.textContent = '音声認識は利用できません。';
+          recognitionStatus.dataset.state = 'idle';
+          delete recognitionStatus.dataset.previousStatus;
+        } else {
+          document.querySelectorAll('.recognize-control').forEach((button) => {
+            if (button.dataset.defaultLabel) {
+              button.setAttribute('aria-label', button.dataset.defaultLabel);
+            }
+            button.disabled = false;
+          });
+          speechFeedback.classList.remove('is-hidden');
+          recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
+          recognitionNotice.classList.remove('is-hidden');
+          recognitionStatus.textContent = defaultStatusMessage;
+          recognitionStatus.dataset.state = 'idle';
+          delete recognitionStatus.dataset.previousStatus;
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'nl-NL';
@@ -1658,7 +1763,12 @@
         };
 
         recognition.addEventListener('start', () => {
-          recognitionStatus.textContent = '録音中です。話し終えたら自動的に判定します。';
+          if (recognitionStatus) {
+            recognitionStatus.dataset.previousStatus =
+              recognitionStatus.textContent?.trim() || defaultStatusMessage;
+            recognitionStatus.dataset.state = 'recognition';
+            recognitionStatus.textContent = '録音中です。話し終えたら自動的に判定します。';
+          }
         });
 
         recognition.addEventListener('result', (event) => {
@@ -1673,6 +1783,8 @@
 
         recognition.addEventListener('error', (event) => {
           recognitionStatus.textContent = `エラーが発生しました: ${event.error}`;
+          recognitionStatus.dataset.state = 'idle';
+          delete recognitionStatus.dataset.previousStatus;
           recognitionText.textContent = '-';
           recognitionScore.textContent = '-';
           releaseRecognitionButton();
@@ -1680,6 +1792,8 @@
 
         recognition.addEventListener('nomatch', () => {
           recognitionStatus.textContent = '音声を認識できませんでした。もう一度お試しください。';
+          recognitionStatus.dataset.state = 'idle';
+          delete recognitionStatus.dataset.previousStatus;
           recognitionText.textContent = '-';
           recognitionScore.textContent = '-';
         });
@@ -1687,8 +1801,13 @@
         recognition.addEventListener('end', () => {
           releaseRecognitionButton();
 
-          if (recognitionStatus.textContent.startsWith('録音中です')) {
-            recognitionStatus.textContent = defaultStatusMessage;
+          if (recognitionStatus) {
+            if (recognitionStatus.dataset.state === 'recognition') {
+              recognitionStatus.textContent =
+                recognitionStatus.dataset.previousStatus || defaultStatusMessage;
+            }
+            recognitionStatus.dataset.state = 'idle';
+            delete recognitionStatus.dataset.previousStatus;
           }
         });
 
@@ -1735,6 +1854,8 @@
           } catch (error) {
             recognitionStatus.textContent =
               '音声認識の開始に失敗しました。もう一度お試しください。';
+            recognitionStatus.dataset.state = 'idle';
+            delete recognitionStatus.dataset.previousStatus;
             releaseRecognitionButton();
             targetPhrase = '';
             recognitionTarget.textContent = '-';
