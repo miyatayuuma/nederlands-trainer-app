@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhraseLearner | 日本語⇔オランダ語 フレーズ学習</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f7fb;
+      --fg: #1f2933;
+      --accent: #ff7a59;
+      --accent-dark: #c24e31;
+      --card-bg: #ffffff;
+      --muted: #5f6c7b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --fg: #e2e8f0;
+        --card-bg: #16203a;
+        --muted: #8ea4c4;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 24px 20px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: 0.04em;
+    }
+
+    header p {
+      margin: 12px auto 0;
+      max-width: 720px;
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    main {
+      flex: 1;
+      width: min(960px, 92vw);
+      margin: 0 auto 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(15, 23, 42, 0.05);
+    }
+
+    .setup-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .setup-list li {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 122, 89, 0.08);
+      border: 1px dashed rgba(255, 122, 89, 0.4);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .placeholder {
+      text-align: center;
+      padding: 48px 20px;
+      border: 2px dashed rgba(96, 110, 133, 0.25);
+      border-radius: 18px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px 32px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PhraseLearner</h1>
+    <p>
+      日本語とオランダ語のよく使うフレーズに特化した学習アプリへリニューアル中です。
+      まずは既存ゲーム要素を取り除き、シンプルな学習体験の土台を整えました。
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>次のステップ</h2>
+      <ul class="setup-list">
+        <li>日本語⇔オランダ語のフレーズデータを整備する</li>
+        <li>カテゴリ別に閲覧・練習できるUIを設計する</li>
+        <li>検索や発音サポートなどの機能を検討する</li>
+      </ul>
+    </section>
+
+    <section class="placeholder">
+      フレーズ一覧やクイズ機能などの学習コンテンツは、この領域に追加していきます。
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2024 PhraseLearner. All rights reserved.
+  </footer>
+</body>
+</html>
