@@ -92,12 +92,63 @@
       line-height: 1.6;
     }
 
-    .placeholder {
-      text-align: center;
-      padding: 48px 20px;
-      border: 2px dashed rgba(96, 110, 133, 0.25);
-      border-radius: 18px;
+    .phrase-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .phrase-section h2 {
+      margin: 0;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+    }
+
+    .phrase-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .phrase-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 520px;
+      font-size: 0.95rem;
+    }
+
+    .phrase-table thead {
+      background: rgba(255, 122, 89, 0.12);
+    }
+
+    .phrase-table th,
+    .phrase-table td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .phrase-table th {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .phrase-table td:nth-child(3) {
       color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .phrase-table tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.03);
+    }
+
+    @media (max-width: 640px) {
+      .phrase-table {
+        min-width: 100%;
+        font-size: 0.9rem;
+      }
+
+      .phrase-table th,
+      .phrase-table td {
+        padding: 10px 12px;
+      }
     }
 
     footer {
@@ -127,8 +178,108 @@
       </ul>
     </section>
 
-    <section class="placeholder">
-      フレーズ一覧やクイズ機能などの学習コンテンツは、この領域に追加していきます。
+    <section class="card phrase-section">
+      <h2>挨拶</h2>
+      <div class="phrase-table-wrapper">
+        <table class="phrase-table">
+          <thead>
+            <tr>
+              <th>日本語</th>
+              <th>オランダ語</th>
+              <th>カタカナ・発音ヒント</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>おはようございます</td>
+              <td>Goedemorgen</td>
+              <td>フーデモルヘン</td>
+            </tr>
+            <tr>
+              <td>こんにちは</td>
+              <td>Hallo</td>
+              <td>ハロ</td>
+            </tr>
+            <tr>
+              <td>こんばんは</td>
+              <td>Goedenavond</td>
+              <td>フーデナーフォント</td>
+            </tr>
+            <tr>
+              <td>はじめまして</td>
+              <td>Aangenaam</td>
+              <td>アーヘナーム</td>
+            </tr>
+            <tr>
+              <td>ありがとう</td>
+              <td>Dank je wel</td>
+              <td>ダンク ヤ ウェル</td>
+            </tr>
+            <tr>
+              <td>さようなら</td>
+              <td>Tot ziens</td>
+              <td>トット スィンス</td>
+            </tr>
+            <tr>
+              <td>また後でね</td>
+              <td>Tot straks</td>
+              <td>トット ストラックス</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card phrase-section">
+      <h2>旅行</h2>
+      <div class="phrase-table-wrapper">
+        <table class="phrase-table">
+          <thead>
+            <tr>
+              <th>日本語</th>
+              <th>オランダ語</th>
+              <th>カタカナ・発音ヒント</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>駅はどこですか？</td>
+              <td>Waar is het station?</td>
+              <td>ワール イス ヘット スタツィオン?</td>
+            </tr>
+            <tr>
+              <td>この電車はアムステルダム行きですか？</td>
+              <td>Gaat deze trein naar Amsterdam?</td>
+              <td>ハート デーゼ トライン ナール アムステルダム?</td>
+            </tr>
+            <tr>
+              <td>切符を2枚ください。</td>
+              <td>Twee kaartjes alstublieft.</td>
+              <td>トゥヴェー カールチェス アルストゥブリーフト</td>
+            </tr>
+            <tr>
+              <td>おすすめのレストランはありますか？</td>
+              <td>Heeft u een aanbevolen restaurant?</td>
+              <td>ヘーフトゥ ウー エーン アーンベーフォーレン レストラン?</td>
+            </tr>
+            <tr>
+              <td>チェックインをお願いします。</td>
+              <td>Ik wil graag inchecken.</td>
+              <td>イク ヴィル フラーフ インチェッケン</td>
+            </tr>
+            <tr>
+              <td>支払いはカードでできますか？</td>
+              <td>Kan ik met pin betalen?</td>
+              <td>カン イク メット ピン ベターレン?</td>
+            </tr>
+            <tr>
+              <td>助けが必要です。</td>
+              <td>Ik heb hulp nodig.</td>
+              <td>イク ヘップ フルプ ノーデッハ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
 
