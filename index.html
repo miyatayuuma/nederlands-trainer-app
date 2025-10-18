@@ -1987,6 +1987,8 @@
       matchesRemaining: 0,
       selection: [],
       busy: false,
+      phraseQueue: [],
+      columns: null,
     };
 
     const pulseElement = (element) => {
@@ -1999,7 +2001,10 @@
       element.classList.add('score-pulse');
     };
 
-    const stagePairCount = () => Math.min(5, PHRASE_DATA.length);
+    const MAX_VISIBLE_PAIRS = 5;
+
+    const stagePairCount = (stage = 1) =>
+      Math.min(stage * MAX_VISIBLE_PAIRS, PHRASE_DATA.length);
 
     const setStatus = (message) => {
       if (gameStatus) {
@@ -2106,6 +2111,65 @@
       return { dutchColumn, japaneseColumn };
     };
 
+    const insertCardRandomly = (column, card) => {
+      if (!column || !card) {
+        return;
+      }
+
+      const insertionIndex = Math.floor(Math.random() * (column.childElementCount + 1));
+
+      if (insertionIndex >= column.childElementCount) {
+        column.appendChild(card);
+        return;
+      }
+
+      column.insertBefore(card, column.children[insertionIndex]);
+    };
+
+    const dealPhrasePair = (phrase) => {
+      if (!phrase || !gameState.columns) {
+        return;
+      }
+
+      const { dutchColumn, japaneseColumn } = gameState.columns;
+
+      if (!dutchColumn || !japaneseColumn) {
+        return;
+      }
+
+      const dutchCard = createGameCard(phrase, 'nl');
+      const japaneseCard = createGameCard(phrase, 'ja');
+
+      insertCardRandomly(dutchColumn, dutchCard);
+      insertCardRandomly(japaneseColumn, japaneseCard);
+    };
+
+    const replenishBoard = () => {
+      if (!gameState.columns) {
+        return;
+      }
+
+      const { dutchColumn, japaneseColumn } = gameState.columns;
+
+      if (!dutchColumn || !japaneseColumn) {
+        return;
+      }
+
+      while (
+        gameState.phraseQueue.length > 0 &&
+        dutchColumn.childElementCount < MAX_VISIBLE_PAIRS &&
+        japaneseColumn.childElementCount < MAX_VISIBLE_PAIRS
+      ) {
+        const nextPhrase = gameState.phraseQueue.shift();
+
+        if (!nextPhrase) {
+          break;
+        }
+
+        dealPhrasePair(nextPhrase);
+      }
+    };
+
     const resetGame = (announce = true) => {
       gameState.stage = 0;
       gameState.score = 0;
@@ -2114,6 +2178,8 @@
       gameState.matchesRemaining = 0;
       gameState.selection = [];
       gameState.busy = false;
+      gameState.phraseQueue = [];
+      gameState.columns = null;
       updateScoreboard();
 
       if (gameGrid) {
@@ -2227,7 +2293,9 @@
       if (isMatch) {
         playMatchFeedbackTone(true);
         const phrase = PHRASE_LOOKUP.get(first.pairId);
-        [first.card, second.card].forEach((card) => {
+        const matchedCards = [first.card, second.card];
+
+        matchedCards.forEach((card) => {
           card.classList.remove('is-selected');
           card.classList.add('is-matched', 'is-disabled');
         });
@@ -2252,6 +2320,14 @@
         }
 
         gameState.selection = [];
+        matchedCards.forEach((card) => {
+          if (card && typeof card.remove === 'function') {
+            card.remove();
+          }
+        });
+
+        replenishBoard();
+
         gameState.busy = false;
 
         if (gameState.matchesRemaining === 0) {
@@ -2341,12 +2417,6 @@
       }
 
       const selectedPairs = shuffleArray(PHRASE_DATA).slice(0, pairCount);
-      const cards = shuffleArray(
-        selectedPairs.flatMap((phrase) => [
-          { phrase, lang: 'ja' },
-          { phrase, lang: 'nl' },
-        ])
-      );
 
       gameGrid.setAttribute('aria-busy', 'true');
 
@@ -2357,12 +2427,10 @@
         return;
       }
 
-      const { dutchColumn, japaneseColumn } = columns;
+      gameState.columns = columns;
+      gameState.phraseQueue = [...selectedPairs];
 
-      cards.forEach(({ phrase, lang }) => {
-        const targetColumn = lang === 'nl' ? dutchColumn : japaneseColumn;
-        targetColumn.appendChild(createGameCard(phrase, lang));
-      });
+      replenishBoard();
 
       gameGrid.removeAttribute('aria-busy');
 
