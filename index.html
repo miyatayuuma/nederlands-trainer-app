@@ -311,19 +311,250 @@
       color: var(--muted);
     }
 
-    .is-hidden {
-      display: none !important;
+    .intro-card p {
+      margin-bottom: 16px;
+      line-height: 1.7;
+      color: var(--muted);
     }
 
-    .phrase-section {
+    .phrase-browser {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
-    .phrase-section h3 {
+    .phrase-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .phrase-section-header p {
       margin: 0;
-      font-size: 1.35rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .phrase-filter-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .filter-field span {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .filter-field select {
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      background: rgba(15, 23, 42, 0.02);
+      font-size: 0.95rem;
+      color: inherit;
+    }
+
+    .filter-field select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tag-filter {
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.02);
+    }
+
+    .tag-filter legend {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--fg);
+    }
+
+    .tag-filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag-chip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .tag-chip input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      border: 0;
+      padding: 0;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .tag-chip span {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      background: rgba(15, 23, 42, 0.05);
+      font-size: 0.85rem;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .tag-chip input:checked + span {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .tag-chip input:focus-visible + span {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tag-clear-button,
+    .filter-reset-button {
+      align-self: flex-start;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      background: rgba(15, 23, 42, 0.04);
+      color: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tag-clear-button:hover,
+    .tag-clear-button:focus-visible,
+    .filter-reset-button:hover,
+    .filter-reset-button:focus-visible {
+      background: rgba(15, 23, 42, 0.08);
+      border-color: rgba(15, 23, 42, 0.32);
+      outline: none;
+    }
+
+    .filter-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .phrase-count {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .phrase-status {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.05);
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .scenario-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .scenario-card {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 18px;
+      padding: 20px 20px 24px;
+      background: var(--card-bg);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .scenario-card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .scenario-card-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .scenario-count {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.08);
+    }
+
+    .scenario-category + .scenario-category {
+      margin-top: 20px;
+    }
+
+    .scenario-category h4 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+    }
+
+    .phrase-meta {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .phrase-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.1);
+      color: var(--muted);
+    }
+
+    .phrase-badge-level {
+      background: rgba(255, 122, 89, 0.18);
+      color: var(--accent-dark);
+    }
+
+    .phrase-badge-tag {
+      background: rgba(15, 23, 42, 0.08);
+    }
+
+    .is-hidden {
+      display: none !important;
     }
 
     .game-section {
@@ -742,12 +973,15 @@
           aria-hidden="false"
           data-mode-panel="study"
         >
-          <section class="card">
-            <h2>次のステップ</h2>
+          <section class="card intro-card">
+            <h2>旅のシナリオに合わせて学ぶ</h2>
+            <p>
+              長期滞在の旅行者が直面するシチュエーションを想定し、日常会話から空港・交通、宿泊、食事、観光、ショッピング、緊急対応まで58フレーズを整理しました。音声の再生と発話トレーニングを活用して、滞在中に必要な表現を実践的に身につけましょう。
+            </p>
             <ul class="setup-list">
-              <li>日本語⇔オランダ語のフレーズデータを整備する</li>
-              <li>カテゴリ別に閲覧・練習できるUIを設計する</li>
-              <li>検索や発音サポートなどの機能を検討する</li>
+              <li>日常・移動・宿泊・食事・観光・緊急の7シナリオをカバー</li>
+              <li>シナリオ・レベル・タグによる柔軟なフィルターと並び替え</li>
+              <li>全フレーズで音声再生とマイクによる発話チェックが可能</li>
             </ul>
           </section>
 
@@ -777,420 +1011,46 @@
             </div>
             <p id="speech-recognition-notice" class="speech-notice is-hidden" aria-live="polite"></p>
           </section>
-          <section class="card phrase-section">
-            <h3>挨拶</h3>
-            <table class="phrase-table">
-              <thead>
-                <tr>
-                  <th scope="col">日本語</th>
-                  <th scope="col">オランダ語</th>
-                  <th scope="col">カタカナ・発音ヒント</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-phrase-id="greet-morning">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">丁寧な朝の挨拶</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-morning"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-morning"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="greet-day">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">日中の挨拶</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-day"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-day"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="greet-evening">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">夕方以降の挨拶</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-evening"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-evening"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="greet-meet">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">初対面の挨拶</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-meet"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-meet"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="greet-bye">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">別れの挨拶</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-bye"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-bye"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="greet-later">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">カジュアルな別れ</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="greet-later"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="greet-later"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="card phrase-section">
-            <h3>旅行</h3>
-            <table class="phrase-table">
-              <thead>
-                <tr>
-                  <th scope="col">日本語</th>
-                  <th scope="col">オランダ語</th>
-                  <th scope="col">カタカナ・発音ヒント</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-phrase-id="travel-station">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">場所を尋ねる</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-station"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-station"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="travel-train">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-train"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-train"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="travel-ticket">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-ticket"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-ticket"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="travel-checkin">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">ホテルで</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-checkin"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-checkin"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="travel-restaurant">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-restaurant"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-restaurant"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="emergency-help">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                    <span class="phrase-note">緊急時</span>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="emergency-help"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="emergency-help"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-                <tr data-phrase-id="travel-restroom">
-                  <td data-label="日本語">
-                    <strong data-phrase-field="ja"></strong>
-                  </td>
-                  <td data-label="オランダ語">
-                    <span class="phrase-dutch" data-phrase-field="nl"></span>
-                    <div class="phrase-actions" role="group" aria-label="音声操作">
-                      <button
-                        type="button"
-                        class="icon-button speak-control"
-                        data-phrase-id="travel-restroom"
-                        aria-label="オランダ語フレーズを再生"
-                      >
-                        <span aria-hidden="true">🔊</span>
-                      </button>
-                      <button
-                        type="button"
-                        class="icon-button recognize-control"
-                        data-phrase-id="travel-restroom"
-                        aria-label="オランダ語フレーズの発声をテスト"
-                      >
-                        <span aria-hidden="true">🎤</span>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="カタカナ・発音ヒント">
-                    <span data-phrase-field="hint"></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <section class="card phrase-browser">
+            <div class="phrase-section-header">
+              <h2>シナリオ別フレーズ</h2>
+              <p>
+                空港、交通、宿泊、食事、観光、ショッピング、緊急時などマルチウィーク滞在で出会う場面をカバーしています。シナリオやレベル、興味のあるタグで絞り込み、必要なフレーズから重点的に練習しましょう。
+              </p>
+            </div>
+            <form id="phrase-filter-form" class="phrase-filter-form" autocomplete="off">
+              <div class="filter-grid">
+                <label class="filter-field">
+                  <span>シナリオ</span>
+                  <select id="filter-scenario" name="scenario"></select>
+                </label>
+                <label class="filter-field">
+                  <span>レベル</span>
+                  <select id="filter-level" name="level"></select>
+                </label>
+                <label class="filter-field">
+                  <span>並び順</span>
+                  <select id="filter-sort" name="sort"></select>
+                </label>
+              </div>
+              <fieldset class="tag-filter">
+                <legend>タグで絞り込む</legend>
+                <div id="tag-filter-options" class="tag-filter-options"></div>
+                <button type="button" id="tag-clear-button" class="tag-clear-button">タグをクリア</button>
+              </fieldset>
+              <div class="filter-footer">
+                <span id="phrase-count" class="phrase-count" aria-live="polite">- 件のフレーズ</span>
+                <button type="reset" class="filter-reset-button">条件をリセット</button>
+              </div>
+            </form>
+            <div id="phrase-loading" class="phrase-status" role="status" aria-live="polite">
+              フレーズデータを読み込んでいます…
+            </div>
+            <div id="phrase-error" class="phrase-status is-hidden" role="status" aria-live="polite"></div>
+            <div id="phrase-empty" class="phrase-status is-hidden" role="status" aria-live="polite">
+              条件に一致するフレーズが見つかりませんでした。
+            </div>
+            <div id="study-content" class="scenario-list" aria-live="polite"></div>
           </section>
         </section>
 
@@ -1277,172 +1137,605 @@
   </footer>
 
   <script>
-    const PHRASE_DATA = [
-      {
-        id: 'greet-morning',
-        category: 'greetings',
-        ja: 'おはようございます。',
-        nl: 'Goedemorgen.',
-        hint: 'フーデモルヘン /ɣudəˈmɔr.ɣə(n)/',
-        featured: true,
-      },
-      {
-        id: 'greet-day',
-        category: 'greetings',
-        ja: 'こんにちは。',
-        nl: 'Goedemiddag.',
-        hint: 'フーデミダフ /ɣudəˈmɪdɑx/',
-      },
-      {
-        id: 'greet-evening',
-        category: 'greetings',
-        ja: 'こんばんは。',
-        nl: 'Goedenavond.',
-        hint: 'フーデナーフォント /ɣudəˈnaːvɔnt/',
-      },
-      {
-        id: 'greet-meet',
-        category: 'greetings',
-        ja: 'はじめまして。',
-        nl: 'Aangenaam.',
-        hint: 'アーネナーム /ˈaːŋɣənaːm/',
-      },
-      {
-        id: 'greet-bye',
-        category: 'greetings',
-        ja: 'さようなら。',
-        nl: 'Tot ziens.',
-        hint: 'トッツィンス /tɔt ˈzins/',
-      },
-      {
-        id: 'greet-later',
-        category: 'greetings',
-        ja: 'また後でね。',
-        nl: 'Tot later.',
-        hint: 'トト ラーテル /tɔt ˈlaːtər/',
-      },
-      {
-        id: 'polite-thanks',
-        category: 'essentials',
-        ja: 'ありがとうございます。',
-        nl: 'Dank u wel.',
-        hint: 'ダンク ウ ヴェル /dɑŋk y ʋɛl/',
-        featured: true,
-      },
-      {
-        id: 'polite-sorry',
-        category: 'essentials',
-        ja: 'すみません。',
-        nl: 'Pardon.',
-        hint: 'パルドン /ˈpɑr.dɔn/',
-        featured: true,
-      },
-      {
-        id: 'travel-station',
-        category: 'travel',
-        ja: '駅はどこですか？',
-        nl: 'Waar is het station?',
-        hint: 'ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/',
-        featured: true,
-      },
-      {
-        id: 'travel-train',
-        category: 'travel',
-        ja: 'この列車はアムステルダム行きですか？',
-        nl: 'Gaat deze trein naar Amsterdam?',
-        hint: 'ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/',
-      },
-      {
-        id: 'travel-ticket',
-        category: 'travel',
-        ja: '切符を2枚ください。',
-        nl: 'Mag ik twee kaartjes alstublieft?',
-        hint: 'マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/',
-      },
-      {
-        id: 'travel-checkin',
-        category: 'travel',
-        ja: 'チェックインをお願いします。',
-        nl: 'Ik wil graag inchecken.',
-        hint: 'イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/',
-      },
-      {
-        id: 'travel-restaurant',
-        category: 'travel',
-        ja: 'おすすめのレストランはありますか？',
-        nl: 'Heeft u een aanbeveling voor een restaurant?',
-        hint: 'ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/',
-      },
-      {
-        id: 'emergency-help',
-        category: 'essentials',
-        ja: '助けが必要です。',
-        nl: 'Ik heb hulp nodig.',
-        hint: 'イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/',
-        featured: true,
-      },
-      {
-        id: 'travel-restroom',
-        category: 'travel',
-        ja: 'トイレはどこですか？',
-        nl: 'Waar is het toilet?',
-        hint: 'ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/',
-      },
-    ];
+    // フレーズデータは外部JSONから読み込みます。
 
-    const PHRASE_LOOKUP = new Map(PHRASE_DATA.map((phrase) => [phrase.id, phrase]));
 
-    const initializePhraseTables = () => {
-      const rows = document.querySelectorAll('[data-phrase-id]');
+    const DATA_URL = 'data/phrases.json';
+    const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-      rows.forEach((row) => {
-        const phraseId = row.getAttribute('data-phrase-id');
+    const loadPhraseData = async () => {
+      const response = await fetch(DATA_URL, { cache: 'no-store' });
 
-        if (!phraseId) {
-          return;
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
-        const phrase = PHRASE_LOOKUP.get(phraseId);
+      const payload = await response.json();
 
-        if (!phrase) {
-          return;
-        }
+      if (!payload || !Array.isArray(payload.phrases)) {
+        throw new Error('フレーズデータの形式が正しくありません。');
+      }
 
-        row.querySelectorAll('[data-phrase-field]').forEach((field) => {
-          const fieldName = field.getAttribute('data-phrase-field');
+      return payload.phrases;
+    };
 
-          if (fieldName === 'ja') {
-            field.textContent = phrase.ja;
-          } else if (fieldName === 'nl') {
-            field.textContent = phrase.nl;
-          } else if (fieldName === 'hint') {
-            field.textContent = phrase.hint ?? '―';
+    const createPhraseModel = (phrases) => {
+      const normalized = phrases.map((phrase, index) => {
+        const scenario = Array.isArray(phrase.scenario)
+          ? phrase.scenario.filter((value) => typeof value === 'string' && value.trim().length > 0)
+          : [];
+        const level = Array.isArray(phrase.level)
+          ? phrase.level.filter((value) => typeof value === 'string' && value.trim().length > 0)
+          : [];
+        const tags = Array.isArray(phrase.tags)
+          ? phrase.tags.filter((value) => typeof value === 'string' && value.trim().length > 0)
+          : [];
+
+        return {
+          ...phrase,
+          scenario: scenario.length > 0 ? scenario : ['その他'],
+          level: level.length > 0 ? level : ['A1'],
+          tags,
+          note: typeof phrase.note === 'string' ? phrase.note : '',
+          order: index,
+        };
+      });
+
+      const lookup = new Map(normalized.map((phrase) => [phrase.id, phrase]));
+      const scenarioOrder = [];
+      const categoryOrderMap = new Map();
+      const tagSet = new Set();
+      const levelSet = new Set();
+
+      normalized.forEach((phrase) => {
+        const categoryName = phrase.category ?? 'その他';
+
+        phrase.scenario.forEach((scenarioName) => {
+          if (!scenarioOrder.includes(scenarioName)) {
+            scenarioOrder.push(scenarioName);
+          }
+
+          const storedOrder = categoryOrderMap.get(scenarioName);
+
+          if (storedOrder) {
+            if (!storedOrder.includes(categoryName)) {
+              storedOrder.push(categoryName);
+            }
+          } else {
+            categoryOrderMap.set(scenarioName, [categoryName]);
           }
         });
 
-        const speakButton = row.querySelector('.speak-control');
-
-        if (speakButton) {
-          const speakLabel = `「${phrase.ja}」をオランダ語で再生`;
-          speakButton.dataset.phraseId = phrase.id;
-          speakButton.dataset.defaultLabel = speakLabel;
-          speakButton.dataset.activeLabel = `「${phrase.ja}」を再生中`;
-          speakButton.setAttribute('aria-label', speakLabel);
-        }
-
-        const recognizeButton = row.querySelector('.recognize-control');
-
-        if (recognizeButton) {
-          const recognizeLabel = `マイクで「${phrase.nl}」（${phrase.ja}）を発声してみよう`;
-          recognizeButton.dataset.phraseId = phrase.id;
-          recognizeButton.dataset.defaultLabel = recognizeLabel;
-          recognizeButton.dataset.activeLabel = `「${phrase.nl}」を録音中`;
-          recognizeButton.setAttribute('aria-label', recognizeLabel);
-        }
+        phrase.tags.forEach((tag) => tagSet.add(tag));
+        phrase.level.forEach((levelValue) => levelSet.add(levelValue));
       });
+
+      const levelOptions = Array.from(levelSet).sort((a, b) => {
+        const indexA = LEVEL_ORDER.indexOf(a);
+        const indexB = LEVEL_ORDER.indexOf(b);
+
+        if (indexA === -1 && indexB === -1) {
+          return a.localeCompare(b, 'ja');
+        }
+
+        if (indexA === -1) {
+          return 1;
+        }
+
+        if (indexB === -1) {
+          return -1;
+        }
+
+        return indexA - indexB;
+      });
+
+      const tagOptions = Array.from(tagSet).sort((a, b) => a.localeCompare(b, 'ja'));
+
+      const filter = ({ scenario, level, tags }) =>
+        normalized.filter((phrase) => {
+          const matchesScenario =
+            !scenario || scenario === 'all' || phrase.scenario.includes(scenario);
+          const matchesLevel = !level || level === 'all' || phrase.level.includes(level);
+          const matchesTags =
+            !tags || tags.length === 0 || tags.every((tag) => phrase.tags.includes(tag));
+
+          return matchesScenario && matchesLevel && matchesTags;
+        });
+
+      const comparators = {
+        default: (a, b) => a.order - b.order,
+        ja: (a, b) => a.ja.localeCompare(b.ja, 'ja'),
+        nl: (a, b) => a.nl.localeCompare(b.nl, 'nl'),
+        level: (a, b) => {
+          const indexFromPhrase = (phrase) => {
+            const indexes = phrase.level
+              .map((levelValue) => {
+                const index = LEVEL_ORDER.indexOf(levelValue);
+                return index === -1 ? Number.POSITIVE_INFINITY : index;
+              })
+              .sort((x, y) => x - y);
+
+            return indexes.length > 0 ? indexes[0] : Number.POSITIVE_INFINITY;
+          };
+
+          const indexA = indexFromPhrase(a);
+          const indexB = indexFromPhrase(b);
+
+          if (indexA === indexB) {
+            return a.ja.localeCompare(b.ja, 'ja');
+          }
+
+          return indexA - indexB;
+        },
+      };
+
+      const sort = (phrases, sortKey) => {
+        const comparator = comparators[sortKey] ?? comparators.default;
+        return [...phrases].sort(comparator);
+      };
+
+      const group = (phrases, scenarioFilter) => {
+        const activeScenarioNames =
+          scenarioFilter && scenarioFilter !== 'all'
+            ? new Set([scenarioFilter])
+            : new Set(scenarioOrder);
+
+        const scenarioMap = new Map();
+
+        phrases.forEach((phrase) => {
+          const categoryName = phrase.category ?? 'その他';
+
+          phrase.scenario.forEach((scenarioName) => {
+            if (!activeScenarioNames.has(scenarioName)) {
+              return;
+            }
+
+            let scenarioEntry = scenarioMap.get(scenarioName);
+
+            if (!scenarioEntry) {
+              scenarioEntry = {
+                name: scenarioName,
+                categories: new Map(),
+                order: scenarioOrder.indexOf(scenarioName),
+              };
+              scenarioMap.set(scenarioName, scenarioEntry);
+            }
+
+            let categoryEntry = scenarioEntry.categories.get(categoryName);
+
+            if (!categoryEntry) {
+              categoryEntry = { name: categoryName, phrases: [] };
+              scenarioEntry.categories.set(categoryName, categoryEntry);
+            }
+
+            categoryEntry.phrases.push(phrase);
+          });
+        });
+
+        const groupedScenarios = Array.from(scenarioMap.values()).sort((a, b) => {
+          const orderA = a.order === -1 ? Number.MAX_SAFE_INTEGER : a.order;
+          const orderB = b.order === -1 ? Number.MAX_SAFE_INTEGER : b.order;
+
+          if (orderA === orderB) {
+            return a.name.localeCompare(b.name, 'ja');
+          }
+
+          return orderA - orderB;
+        });
+
+        return groupedScenarios.map((scenarioEntry) => {
+          const baseOrder = categoryOrderMap.get(scenarioEntry.name) ?? [];
+          const categories = Array.from(scenarioEntry.categories.values()).sort((a, b) => {
+            const orderA = baseOrder.indexOf(a.name);
+            const orderB = baseOrder.indexOf(b.name);
+
+            if (orderA === -1 && orderB === -1) {
+              return a.name.localeCompare(b.name, 'ja');
+            }
+
+            if (orderA === -1) {
+              return 1;
+            }
+
+            if (orderB === -1) {
+              return -1;
+            }
+
+            return orderA - orderB;
+          });
+
+          return {
+            name: scenarioEntry.name,
+            categories,
+          };
+        });
+      };
+
+      const filterByLevel = (level) => filter({ scenario: null, level, tags: [] });
+      const filterByTags = (tags) => filter({ scenario: null, level: null, tags });
+
+      return {
+        phrases: normalized,
+        lookup,
+        scenarioOrder,
+        levelOptions,
+        tagOptions,
+        filter,
+        sort,
+        group,
+        filterByLevel,
+        filterByTags,
+      };
     };
 
-    initializePhraseTables();
+    let phraseModel = null;
+
+    const getPhraseById = (id) =>
+      phraseModel ? phraseModel.lookup.get(id) ?? null : null;
+
+    const getAllPhrases = () => (phraseModel ? phraseModel.phrases : []);
+
+
+    const renderStudyMode = (model) => {
+      const scenarioSelect = document.getElementById('filter-scenario');
+      const levelSelect = document.getElementById('filter-level');
+      const sortSelect = document.getElementById('filter-sort');
+      const tagContainer = document.getElementById('tag-filter-options');
+      const tagClearButton = document.getElementById('tag-clear-button');
+      const filterForm = document.getElementById('phrase-filter-form');
+      const loadingIndicator = document.getElementById('phrase-loading');
+      const errorIndicator = document.getElementById('phrase-error');
+      const emptyIndicator = document.getElementById('phrase-empty');
+      const summaryIndicator = document.getElementById('phrase-count');
+      const contentContainer = document.getElementById('study-content');
+
+      if (
+        !scenarioSelect ||
+        !levelSelect ||
+        !sortSelect ||
+        !tagContainer ||
+        !filterForm ||
+        !contentContainer
+      ) {
+        return;
+      }
+
+      if (errorIndicator) {
+        errorIndicator.classList.add('is-hidden');
+        errorIndicator.textContent = '';
+      }
+
+      const getSelectedTags = () =>
+        Array.from(tagContainer.querySelectorAll('input[type="checkbox"]:checked')).map(
+          (input) => input.value
+        );
+
+      const updateSummary = (count) => {
+        if (summaryIndicator) {
+          summaryIndicator.textContent = `${count}件のフレーズ`;
+        }
+      };
+
+      scenarioSelect.innerHTML = '';
+      const scenarioDefaultOption = document.createElement('option');
+      scenarioDefaultOption.value = 'all';
+      scenarioDefaultOption.textContent = 'すべてのシナリオ';
+      scenarioSelect.appendChild(scenarioDefaultOption);
+
+      model.scenarioOrder.forEach((scenarioName) => {
+        const option = document.createElement('option');
+        option.value = scenarioName;
+        option.textContent = scenarioName;
+        scenarioSelect.appendChild(option);
+      });
+
+      levelSelect.innerHTML = '';
+      const levelDefaultOption = document.createElement('option');
+      levelDefaultOption.value = 'all';
+      levelDefaultOption.textContent = 'すべてのレベル';
+      levelSelect.appendChild(levelDefaultOption);
+
+      model.levelOptions.forEach((level) => {
+        const option = document.createElement('option');
+        option.value = level;
+        option.textContent = level;
+        levelSelect.appendChild(option);
+      });
+
+      sortSelect.innerHTML = '';
+      [
+        { value: 'default', label: '登録順' },
+        { value: 'ja', label: '日本語の五十音順' },
+        { value: 'nl', label: 'オランダ語のアルファベット順' },
+        { value: 'level', label: 'レベル順' },
+      ].forEach(({ value, label }) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        sortSelect.appendChild(option);
+      });
+
+      tagContainer.innerHTML = '';
+      model.tagOptions.forEach((tag, index) => {
+        const label = document.createElement('label');
+        label.className = 'tag-chip';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'tags';
+        input.value = tag;
+        input.id = `tag-filter-${index}`;
+        const text = document.createElement('span');
+        text.textContent = tag;
+        label.appendChild(input);
+        label.appendChild(text);
+        tagContainer.appendChild(label);
+      });
+
+      const createBadge = (textContent, type) => {
+        const badge = document.createElement('span');
+        badge.className = `phrase-badge phrase-badge-${type}`;
+        badge.textContent = textContent;
+        return badge;
+      };
+
+      const createPhraseRow = (phrase) => {
+        const row = document.createElement('tr');
+        row.dataset.phraseId = phrase.id;
+
+        const jaCell = document.createElement('td');
+        jaCell.dataset.label = '日本語';
+        const jaStrong = document.createElement('strong');
+        jaStrong.textContent = phrase.ja;
+        jaCell.appendChild(jaStrong);
+
+        if (phrase.note) {
+          const note = document.createElement('span');
+          note.className = 'phrase-note';
+          note.textContent = phrase.note;
+          jaCell.appendChild(note);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'phrase-meta';
+
+        phrase.level.forEach((levelValue) => {
+          meta.appendChild(createBadge(`Lv ${levelValue}`, 'level'));
+        });
+
+        phrase.tags.forEach((tag) => {
+          meta.appendChild(createBadge(tag, 'tag'));
+        });
+
+        if (meta.childElementCount > 0) {
+          jaCell.appendChild(meta);
+        }
+
+        const nlCell = document.createElement('td');
+        nlCell.dataset.label = 'オランダ語';
+        const nlSpan = document.createElement('span');
+        nlSpan.className = 'phrase-dutch';
+        nlSpan.textContent = phrase.nl;
+        nlCell.appendChild(nlSpan);
+
+        const actionGroup = document.createElement('div');
+        actionGroup.className = 'phrase-actions';
+        actionGroup.setAttribute('role', 'group');
+        actionGroup.setAttribute('aria-label', '音声操作');
+
+        const speakButton = document.createElement('button');
+        speakButton.type = 'button';
+        speakButton.className = 'icon-button speak-control';
+        speakButton.dataset.phraseId = phrase.id;
+        const speakLabel = `「${phrase.ja}」をオランダ語で再生`;
+        speakButton.dataset.defaultLabel = speakLabel;
+        speakButton.dataset.activeLabel = `「${phrase.ja}」を再生中`;
+        speakButton.setAttribute('aria-label', speakLabel);
+        speakButton.innerHTML = '<span aria-hidden="true">🔊</span>';
+        actionGroup.appendChild(speakButton);
+
+        const recognizeButton = document.createElement('button');
+        recognizeButton.type = 'button';
+        recognizeButton.className = 'icon-button recognize-control';
+        recognizeButton.dataset.phraseId = phrase.id;
+        const recognizeLabel = `マイクで「${phrase.nl}」（${phrase.ja}）を発声してみよう`;
+        recognizeButton.dataset.defaultLabel = recognizeLabel;
+        recognizeButton.dataset.activeLabel = `「${phrase.nl}」を録音中`;
+        recognizeButton.setAttribute('aria-label', recognizeLabel);
+        recognizeButton.innerHTML = '<span aria-hidden="true">🎤</span>';
+        actionGroup.appendChild(recognizeButton);
+
+        nlCell.appendChild(actionGroup);
+
+        const hintCell = document.createElement('td');
+        hintCell.dataset.label = 'カタカナ・発音ヒント';
+        const hintSpan = document.createElement('span');
+        hintSpan.textContent = phrase.hint ?? '―';
+        hintCell.appendChild(hintSpan);
+
+        row.appendChild(jaCell);
+        row.appendChild(nlCell);
+        row.appendChild(hintCell);
+
+        return row;
+      };
+
+      const createCategorySection = (category) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'scenario-category';
+
+        const heading = document.createElement('h4');
+        heading.textContent = category.name;
+        wrapper.appendChild(heading);
+
+        const table = document.createElement('table');
+        table.className = 'phrase-table';
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['日本語', 'オランダ語', 'カタカナ・発音ヒント'].forEach((label) => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          th.textContent = label;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        category.phrases.forEach((phrase) => {
+          tbody.appendChild(createPhraseRow(phrase));
+        });
+        table.appendChild(tbody);
+
+        wrapper.appendChild(table);
+        return wrapper;
+      };
+
+      const render = () => {
+        const scenarioValue = scenarioSelect.value;
+        const levelValue = levelSelect.value;
+        const sortValue = sortSelect.value;
+        const selectedTags = getSelectedTags();
+
+        const filtered = model.filter({
+          scenario: scenarioValue,
+          level: levelValue,
+          tags: selectedTags,
+        });
+        const sorted = model.sort(filtered, sortValue);
+        const grouped = model.group(sorted, scenarioValue);
+
+        if (loadingIndicator) {
+          loadingIndicator.classList.add('is-hidden');
+        }
+
+        contentContainer.innerHTML = '';
+
+        if (sorted.length === 0) {
+          updateSummary(0);
+          if (emptyIndicator) {
+            emptyIndicator.classList.remove('is-hidden');
+          }
+          return;
+        }
+
+        if (emptyIndicator) {
+          emptyIndicator.classList.add('is-hidden');
+        }
+
+        updateSummary(sorted.length);
+
+        grouped.forEach((scenarioEntry) => {
+          const scenarioSection = document.createElement('section');
+          scenarioSection.className = 'scenario-card';
+
+          const header = document.createElement('div');
+          header.className = 'scenario-card-header';
+          const title = document.createElement('h3');
+          title.textContent = scenarioEntry.name;
+          header.appendChild(title);
+          const count = document.createElement('span');
+          count.className = 'scenario-count';
+          const phraseCount = scenarioEntry.categories.reduce(
+            (acc, category) => acc + category.phrases.length,
+            0
+          );
+          count.textContent = `${phraseCount}件`;
+          header.appendChild(count);
+          scenarioSection.appendChild(header);
+
+          scenarioEntry.categories.forEach((category) => {
+            scenarioSection.appendChild(createCategorySection(category));
+          });
+
+          contentContainer.appendChild(scenarioSection);
+        });
+
+        if (typeof syncRecognitionControls === 'function') {
+          syncRecognitionControls();
+        }
+      };
+
+      scenarioSelect.addEventListener('change', render);
+      levelSelect.addEventListener('change', render);
+      sortSelect.addEventListener('change', render);
+      tagContainer.addEventListener('change', (event) => {
+        if (event.target && event.target.matches('input[type="checkbox"]')) {
+          render();
+        }
+      });
+
+      if (tagClearButton) {
+        tagClearButton.addEventListener('click', () => {
+          tagContainer.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+            input.checked = false;
+          });
+          render();
+        });
+      }
+
+      filterForm.addEventListener('reset', () => {
+        window.setTimeout(() => {
+          scenarioSelect.value = 'all';
+          levelSelect.value = 'all';
+          sortSelect.value = 'default';
+          tagContainer.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+            input.checked = false;
+          });
+          render();
+        }, 0);
+      });
+
+      render();
+    };
+
+    const attachPhraseData = (model) => {
+      phraseModel = model;
+      if (!window.NederLingo) {
+        window.NederLingo = {};
+      }
+      window.NederLingo.phraseModel = {
+        getAll: () => model.phrases,
+        filterByLevel: model.filterByLevel,
+        filterByTags: model.filterByTags,
+      };
+    };
+
+
+    const showPhraseDataError = (message) => {
+      const errorIndicator = document.getElementById('phrase-error');
+      const loadingIndicator = document.getElementById('phrase-loading');
+
+      if (loadingIndicator) {
+        loadingIndicator.classList.add('is-hidden');
+      }
+
+      if (errorIndicator) {
+        errorIndicator.textContent = message;
+        errorIndicator.classList.remove('is-hidden');
+      }
+    };
+
+    const bootstrapPhraseData = async () => {
+      const loadingIndicator = document.getElementById('phrase-loading');
+
+      if (loadingIndicator) {
+        loadingIndicator.classList.remove('is-hidden');
+      }
+
+      try {
+        const phrases = await loadPhraseData();
+        const model = createPhraseModel(phrases);
+        attachPhraseData(model);
+        renderStudyMode(model);
+        return model;
+      } catch (error) {
+        console.error(error);
+        showPhraseDataError(`フレーズデータの読み込みに失敗しました: ${error.message}`);
+        return null;
+      }
+    };
+
+    const phraseDataPromise = bootstrapPhraseData();
 
     const shuffleArray = (input) => {
       const array = [...input];
@@ -1626,6 +1919,24 @@
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    const syncRecognitionControls = () => {
+      document.querySelectorAll('.recognize-control').forEach((button) => {
+        const baseLabel =
+          button.dataset.defaultLabel || 'オランダ語フレーズの発声をテスト';
+
+        if (!SpeechRecognition) {
+          button.setAttribute(
+            'aria-label',
+            `${baseLabel} (音声認識は利用できません)`
+          );
+          button.disabled = true;
+        } else {
+          button.setAttribute('aria-label', baseLabel);
+          button.disabled = false;
+        }
+      });
+    };
+
     if (rateSlider && rateValue) {
       const updateRateLabel = () => {
         rateValue.textContent = `${parseFloat(rateSlider.value).toFixed(1)}x`;
@@ -1692,7 +2003,7 @@
           return false;
         }
 
-        const phrase = PHRASE_LOOKUP.get(phraseId);
+        const phrase = getPhraseById(phraseId);
         const dutchText = phrase?.nl?.trim();
 
         if (!phrase || !dutchText) {
@@ -1845,33 +2156,27 @@
         recognitionText &&
         recognitionScore
       ) {
+        syncRecognitionControls();
+
         if (!SpeechRecognition) {
-          document.querySelectorAll('.recognize-control').forEach((button) => {
-            const defaultLabel = button.dataset.defaultLabel || button.getAttribute('aria-label');
-            if (defaultLabel) {
-              button.setAttribute('aria-label', `${defaultLabel} (音声認識は利用できません)`);
-            }
-            button.disabled = true;
-          });
+          if (speechFeedback) {
+            speechFeedback.classList.add('is-hidden');
+          }
           recognitionNotice.textContent =
             'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
           recognitionNotice.classList.remove('is-hidden');
           recognitionStatus.textContent = '音声認識は利用できません。';
           recognitionStatus.dataset.state = 'idle';
           delete recognitionStatus.dataset.previousStatus;
-        } else {
-          document.querySelectorAll('.recognize-control').forEach((button) => {
-            if (button.dataset.defaultLabel) {
-              button.setAttribute('aria-label', button.dataset.defaultLabel);
-            }
-            button.disabled = false;
-          });
-          speechFeedback.classList.remove('is-hidden');
-          recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
-          recognitionNotice.classList.remove('is-hidden');
-          recognitionStatus.textContent = defaultStatusMessage;
-          recognitionStatus.dataset.state = 'idle';
-          delete recognitionStatus.dataset.previousStatus;
+          return;
+        }
+
+        speechFeedback.classList.remove('is-hidden');
+        recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
+        recognitionNotice.classList.remove('is-hidden');
+        recognitionStatus.textContent = defaultStatusMessage;
+        recognitionStatus.dataset.state = 'idle';
+        delete recognitionStatus.dataset.previousStatus;
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'nl-NL';
@@ -1970,7 +2275,7 @@
           event.stopPropagation();
 
           const phraseId = button.dataset.phraseId;
-          const phrase = phraseId ? PHRASE_LOOKUP.get(phraseId) : null;
+          const phrase = phraseId ? getPhraseById(phraseId) : null;
           const dutchText = phrase?.nl?.trim();
 
           if (!phrase || !dutchText) {
@@ -2072,8 +2377,15 @@
 
     const MAX_VISIBLE_PAIRS = 5;
 
-    const stagePairCount = (stage = 1) =>
-      Math.min(stage * MAX_VISIBLE_PAIRS, PHRASE_DATA.length);
+    const stagePairCount = (stage = 1) => {
+      const totalPhrases = getAllPhrases().length;
+
+      if (totalPhrases <= 0) {
+        return 0;
+      }
+
+      return Math.min(stage * MAX_VISIBLE_PAIRS, totalPhrases);
+    };
 
     const setStatus = (message) => {
       if (gameStatus) {
@@ -2493,7 +2805,7 @@
 
       if (isMatch) {
         playMatchFeedbackTone(true);
-        const phrase = PHRASE_LOOKUP.get(first.pairId);
+        const phrase = getPhraseById(first.pairId);
         const matchedCards = [first.card, second.card];
 
         matchedCards.forEach((card) => {
@@ -2638,11 +2950,18 @@
       const pairCount = stagePairCount(nextStage);
 
       if (pairCount <= 0) {
-        setStatus('利用できるカードが足りません。');
+        setStatus('フレーズデータを読み込み中です。少し待ってからもう一度お試しください。');
         return;
       }
 
-      const selectedPairs = shuffleArray(PHRASE_DATA).slice(0, pairCount);
+      const availablePhrases = getAllPhrases();
+
+      if (availablePhrases.length === 0) {
+        setStatus('フレーズデータを読み込み中です。少し待ってからもう一度お試しください。');
+        return;
+      }
+
+      const selectedPairs = shuffleArray(availablePhrases).slice(0, pairCount);
 
       gameGrid.setAttribute('aria-busy', 'true');
 
