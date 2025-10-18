@@ -1480,6 +1480,8 @@
     const recognitionLive = document.getElementById('recognition-live');
     const recognitionNotice = document.getElementById('speech-recognition-notice');
 
+    let speakDutchPhrase = null;
+
     const defaultStatusMessage =
       recognitionStatus?.textContent?.trim() || '録音待機中です。';
 
@@ -1618,13 +1620,20 @@
         }
       };
 
-      const speakFromButton = (button) => {
-        const phraseId = button.dataset.phraseId;
-        const phrase = phraseId ? PHRASE_LOOKUP.get(phraseId) : null;
+      speakDutchPhrase = ({ phraseId, triggerButton = null } = {}) => {
+        if (!phraseId) {
+          return false;
+        }
+
+        const phrase = PHRASE_LOOKUP.get(phraseId);
         const dutchText = phrase?.nl?.trim();
 
         if (!phrase || !dutchText) {
-          return;
+          return false;
+        }
+
+        if (availableVoices.length === 0) {
+          refreshVoices();
         }
 
         if (synthesis.speaking || synthesis.pending) {
@@ -1637,7 +1646,10 @@
         utterance.lang = 'nl-NL';
 
         if (rateSlider) {
-          utterance.rate = parseFloat(rateSlider.value) || 1;
+          const parsedRate = parseFloat(rateSlider.value);
+          if (!Number.isNaN(parsedRate)) {
+            utterance.rate = parsedRate;
+          }
         }
 
         const selectedVoice = availableVoices.find(
@@ -1658,46 +1670,51 @@
 
         markStatusForSpeech();
 
-        utterance.onend = () => {
-          restoreStatusAfterSpeech();
+        if (triggerButton) {
+          if (!triggerButton.dataset.defaultLabel) {
+            const currentLabel = triggerButton.getAttribute('aria-label');
+            if (currentLabel) {
+              triggerButton.dataset.defaultLabel = currentLabel;
+            }
+          }
 
-          if (activeButton === button) {
+          activeButton = triggerButton;
+          triggerButton.disabled = true;
+          triggerButton.classList.add('is-active');
+          const activeLabel = triggerButton.dataset.activeLabel ?? '再生中…';
+          triggerButton.setAttribute('aria-label', activeLabel);
+        }
+
+        const clearAfterSpeech = () => {
+          if (triggerButton && activeButton === triggerButton) {
             resetActiveButton();
+          } else {
+            restoreStatusAfterSpeech();
           }
         };
 
-        utterance.onerror = () => {
-          restoreStatusAfterSpeech();
-
-          if (activeButton === button) {
-            resetActiveButton();
-          }
-        };
-
-        activeButton = button;
-        button.disabled = true;
-        button.classList.add('is-active');
-        const activeLabel = button.dataset.activeLabel ?? '再生中…';
-        button.setAttribute('aria-label', activeLabel);
+        utterance.onend = clearAfterSpeech;
+        utterance.onerror = clearAfterSpeech;
 
         synthesis.speak(utterance);
+
+        return true;
       };
 
       const handleSpeakClick = (event) => {
         const button = event.target.closest('.speak-control');
 
-        if (!button) {
+        if (!button || typeof speakDutchPhrase !== 'function') {
           return;
         }
 
         event.preventDefault();
         event.stopPropagation();
 
-        if (availableVoices.length === 0) {
-          refreshVoices();
-        }
-
-        speakFromButton(button);
+        speakDutchPhrase({
+          phraseId: button.dataset.phraseId,
+          triggerButton: button,
+        });
       };
 
       refreshVoices();
@@ -2009,7 +2026,17 @@
 
       const labelText = lang === 'ja' ? '日本語カード' : 'オランダ語カード';
       const displayText = lang === 'ja' ? phrase.ja : phrase.nl;
-      mainButton.setAttribute('aria-label', `${labelText}: ${displayText}`);
+      const ariaHint =
+        lang === 'nl'
+          ? '（タップすると発音が再生されます）'
+          : '（タップしてペアのカードを探しましょう）';
+      mainButton.setAttribute('aria-label', `${labelText}: ${displayText}${ariaHint}`);
+
+      if (lang === 'nl') {
+        mainButton.title = 'タップするとオランダ語の発音が再生されます';
+      } else {
+        mainButton.title = 'タップして対応するカードを探しましょう';
+      }
 
       const textSpan = document.createElement('span');
       textSpan.className = 'game-card-text';
@@ -2054,7 +2081,9 @@
       }
 
       if (announce) {
-        setStatus('ステージを始めてカードをマッチさせましょう！');
+        setStatus(
+          'ステージを始めてカードをマッチさせましょう！オランダ語カードをタップすると発音が流れます。'
+        );
       }
     };
 
@@ -2149,10 +2178,19 @@
         return;
       }
 
+      const isAlreadySelected = card.classList.contains('is-selected');
+      const didSpeak =
+        lang === 'nl' &&
+        !isAlreadySelected &&
+        typeof speakDutchPhrase === 'function' &&
+        speakDutchPhrase({ phraseId: pairId });
+      const statusWithSpeechCue = (message) =>
+        didSpeak ? `🔊 オランダ語カードの発音を再生したよ。${message}` : message;
+
       if (gameState.selection.length === 0) {
         gameState.selection.push({ card, pairId, lang });
         card.classList.add('is-selected');
-        setStatus('もう1枚選んでペアを作ろう！');
+        setStatus(statusWithSpeechCue('もう1枚選んでペアを作ろう！'));
         return;
       }
 
@@ -2161,7 +2199,7 @@
       if (firstSelection.card === card) {
         card.classList.remove('is-selected');
         gameState.selection = [];
-        setStatus('カードを選び直したよ。');
+        setStatus(statusWithSpeechCue('カードを選び直したよ。'));
         return;
       }
 
@@ -2169,7 +2207,7 @@
         firstSelection.card.classList.remove('is-selected');
         gameState.selection = [{ card, pairId, lang }];
         card.classList.add('is-selected');
-        setStatus('もう1枚選んでペアを作ろう！');
+        setStatus(statusWithSpeechCue('もう1枚選んでペアを作ろう！'));
         return;
       }
 
@@ -2227,7 +2265,9 @@
       }
 
       updateScoreboard();
-      setStatus(`ステージ${gameState.stage}スタート！同じ意味のカードをタップしてね。`);
+      setStatus(
+        `ステージ${gameState.stage}スタート！同じ意味のカードをタップしてね。オランダ語カードはタップで発音が流れるよ。`
+      );
     };
 
     if (gameGrid) {
