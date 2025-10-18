@@ -61,6 +61,52 @@
       flex: 1;
       width: min(960px, 92vw);
       margin: 0 auto 48px;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .mode-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mode-button {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 51, 0.12);
+      background: rgba(31, 41, 51, 0.04);
+      color: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+    .mode-button:hover,
+    .mode-button:focus-visible {
+      background: rgba(31, 41, 51, 0.08);
+      border-color: rgba(31, 41, 51, 0.24);
+      outline: none;
+    }
+
+    .mode-button[aria-selected="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .mode-panel-group {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .mode-panel {
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -286,6 +332,10 @@
       }
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     footer {
       text-align: center;
       padding: 24px 16px 32px;
@@ -298,167 +348,228 @@
   <header>
     <h1>NederLingo</h1>
     <p>
-      日本語とオランダ語の定番フレーズに特化した学習アプリとしてリニューアル中です。
-      まずはゲーム的な要素をいったん外し、落ち着いて学べるベースを整えました。
+      日本語とオランダ語のフレーズ練習を、目的に合わせて切り替えられるマルチモード学習体験にアップデートしました。
+    </p>
+    <p>
+      落ち着いて発音や意味を確認できる「フレーズ学習モード」と、今後公開予定の対戦要素を備えた「フレーズチャレンジモード」を切り替えて、自分に合ったリズムで学びましょう。
     </p>
   </header>
 
   <main>
-    <section class="card">
-      <h2>次のステップ</h2>
-      <ul class="setup-list">
-        <li>日本語⇔オランダ語のフレーズデータを整備する</li>
-        <li>カテゴリ別に閲覧・練習できるUIを設計する</li>
-        <li>検索や発音サポートなどの機能を検討する</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>日常フレーズ集</h2>
-      <div class="speech-controls">
-        <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
-        <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
+    <div class="main-container" data-active-mode="study">
+      <div class="mode-switcher" role="tablist" aria-label="学習モードの選択">
+        <button
+          id="mode-tab-study"
+          class="mode-button"
+          type="button"
+          role="tab"
+          aria-controls="mode-panel-study"
+          aria-selected="true"
+          data-mode="study"
+        >
+          フレーズ学習モード
+        </button>
+        <button
+          id="mode-tab-game"
+          class="mode-button"
+          type="button"
+          role="tab"
+          aria-controls="mode-panel-game"
+          aria-selected="false"
+          tabindex="-1"
+          data-mode="game"
+        >
+          フレーズチャレンジモード
+        </button>
       </div>
-      <ul class="phrase-list">
-        <li>
-          <span class="phrase-original">おはようございます。</span>
-          <span class="phrase-translation is-hidden">Goedemorgen.</span>
-          <button class="speak-phrase" type="button">再生</button>
-          <button class="recognize-phrase" type="button">発声テスト</button>
-          <button class="toggle-translation" type="button">訳を表示</button>
-        </li>
-        <li>
-          <span class="phrase-original">ありがとうございます。</span>
-          <span class="phrase-translation is-hidden">Dank u wel.</span>
-          <button class="speak-phrase" type="button">再生</button>
-          <button class="recognize-phrase" type="button">発声テスト</button>
-          <button class="toggle-translation" type="button">訳を表示</button>
-        </li>
-        <li>
-          <span class="phrase-original">すみません。</span>
-          <span class="phrase-translation is-hidden">Pardon.</span>
-          <button class="speak-phrase" type="button">再生</button>
-          <button class="recognize-phrase" type="button">発声テスト</button>
-          <button class="toggle-translation" type="button">訳を表示</button>
-        </li>
-        <li>
-          <span class="phrase-original">駅はどこですか？</span>
-          <span class="phrase-translation is-hidden">Waar is het station?</span>
-          <button class="speak-phrase" type="button">再生</button>
-          <button class="recognize-phrase" type="button">発声テスト</button>
-          <button class="toggle-translation" type="button">訳を表示</button>
-        </li>
-        <li>
-          <span class="phrase-original">助けが必要です。</span>
-          <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
-          <button class="speak-phrase" type="button">再生</button>
-          <button class="recognize-phrase" type="button">発声テスト</button>
-          <button class="toggle-translation" type="button">訳を表示</button>
-        </li>
-      </ul>
-      <div id="recognition-panel" class="recognition-panel is-hidden" aria-live="polite">
-        <p class="recognition-status"><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えて「発声テスト」を押すと発音チェックができます。</span></p>
-        <p class="recognition-target"><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
-        <p class="recognition-result"><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
-        <p class="recognition-score"><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
+
+      <div class="mode-panel-group">
+        <section
+          id="mode-panel-study"
+          class="mode-panel"
+          role="tabpanel"
+          aria-labelledby="mode-tab-study"
+          aria-hidden="false"
+          data-mode-panel="study"
+        >
+          <section class="card">
+            <h2>次のステップ</h2>
+            <ul class="setup-list">
+              <li>日本語⇔オランダ語のフレーズデータを整備する</li>
+              <li>カテゴリ別に閲覧・練習できるUIを設計する</li>
+              <li>検索や発音サポートなどの機能を検討する</li>
+            </ul>
+          </section>
+
+          <section class="card">
+            <h2>日常フレーズ集</h2>
+            <div class="speech-controls">
+              <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
+              <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
+            </div>
+            <ul class="phrase-list">
+              <li>
+                <span class="phrase-original">おはようございます。</span>
+                <span class="phrase-translation is-hidden">Goedemorgen.</span>
+                <button class="speak-phrase" type="button">再生</button>
+                <button class="recognize-phrase" type="button">発声テスト</button>
+                <button class="toggle-translation" type="button">訳を表示</button>
+              </li>
+              <li>
+                <span class="phrase-original">ありがとうございます。</span>
+                <span class="phrase-translation is-hidden">Dank u wel.</span>
+                <button class="speak-phrase" type="button">再生</button>
+                <button class="recognize-phrase" type="button">発声テスト</button>
+                <button class="toggle-translation" type="button">訳を表示</button>
+              </li>
+              <li>
+                <span class="phrase-original">すみません。</span>
+                <span class="phrase-translation is-hidden">Pardon.</span>
+                <button class="speak-phrase" type="button">再生</button>
+                <button class="recognize-phrase" type="button">発声テスト</button>
+                <button class="toggle-translation" type="button">訳を表示</button>
+              </li>
+              <li>
+                <span class="phrase-original">駅はどこですか？</span>
+                <span class="phrase-translation is-hidden">Waar is het station?</span>
+                <button class="speak-phrase" type="button">再生</button>
+                <button class="recognize-phrase" type="button">発声テスト</button>
+                <button class="toggle-translation" type="button">訳を表示</button>
+              </li>
+              <li>
+                <span class="phrase-original">助けが必要です。</span>
+                <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
+                <button class="speak-phrase" type="button">再生</button>
+                <button class="recognize-phrase" type="button">発声テスト</button>
+                <button class="toggle-translation" type="button">訳を表示</button>
+              </li>
+            </ul>
+            <div id="recognition-panel" class="recognition-panel is-hidden" aria-live="polite">
+              <p class="recognition-status"><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えて「発声テスト」を押すと発音チェックができます。</span></p>
+              <p class="recognition-target"><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
+              <p class="recognition-result"><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
+              <p class="recognition-score"><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
+            </div>
+            <p id="speech-recognition-notice" class="recognition-notice is-hidden" aria-live="polite"></p>
+          </section>
+
+          <section class="card phrase-section">
+            <h3>挨拶</h3>
+            <table class="phrase-table">
+              <thead>
+                <tr>
+                  <th scope="col">日本語</th>
+                  <th scope="col">オランダ語</th>
+                  <th scope="col">カタカナ・発音ヒント</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="日本語"><strong>おはようございます。</strong>丁寧な朝の挨拶</td>
+                  <td data-label="オランダ語">Goedemorgen.</td>
+                  <td data-label="カタカナ・発音ヒント">フーデモルヘン /ɣudəˈmɔr.ɣə(n)/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>こんにちは。</strong>日中の挨拶</td>
+                  <td data-label="オランダ語">Goedemiddag.</td>
+                  <td data-label="カタカナ・発音ヒント">フーデミダフ /ɣudəˈmɪdɑx/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>こんばんは。</strong>夕方以降の挨拶</td>
+                  <td data-label="オランダ語">Goedenavond.</td>
+                  <td data-label="カタカナ・発音ヒント">フーデナーフォント /ɣudəˈnaːvɔnt/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>はじめまして。</strong>初対面の挨拶</td>
+                  <td data-label="オランダ語">Aangenaam.</td>
+                  <td data-label="カタカナ・発音ヒント">アーネナーム /ˈaːŋɣənaːm/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>さようなら。</strong>別れの挨拶</td>
+                  <td data-label="オランダ語">Tot ziens.</td>
+                  <td data-label="カタカナ・発音ヒント">トッツィンス /tɔt ˈzins/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>また後でね。</strong>カジュアルな別れ</td>
+                  <td data-label="オランダ語">Tot later.</td>
+                  <td data-label="カタカナ・発音ヒント">トト ラーテル /tɔt ˈlaːtər/</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="card phrase-section">
+            <h3>旅行</h3>
+            <table class="phrase-table">
+              <thead>
+                <tr>
+                  <th scope="col">日本語</th>
+                  <th scope="col">オランダ語</th>
+                  <th scope="col">カタカナ・発音ヒント</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="日本語"><strong>駅はどこですか？</strong>場所を尋ねる</td>
+                  <td data-label="オランダ語">Waar is het station?</td>
+                  <td data-label="カタカナ・発音ヒント">ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>この列車はアムステルダム行きですか？</strong></td>
+                  <td data-label="オランダ語">Gaat deze trein naar Amsterdam?</td>
+                  <td data-label="カタカナ・発音ヒント">ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>切符を2枚ください。</strong></td>
+                  <td data-label="オランダ語">Mag ik twee kaartjes alstublieft?</td>
+                  <td data-label="カタカナ・発音ヒント">マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>チェックインをお願いします。</strong>ホテルで</td>
+                  <td data-label="オランダ語">Ik wil graag inchecken.</td>
+                  <td data-label="カタカナ・発音ヒント">イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>おすすめのレストランはありますか？</strong></td>
+                  <td data-label="オランダ語">Heeft u een aanbeveling voor een restaurant?</td>
+                  <td data-label="カタカナ・発音ヒント">ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>助けが必要です。</strong>緊急時</td>
+                  <td data-label="オランダ語">Ik heb hulp nodig.</td>
+                  <td data-label="カタカナ・発音ヒント">イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/</td>
+                </tr>
+                <tr>
+                  <td data-label="日本語"><strong>トイレはどこですか？</strong></td>
+                  <td data-label="オランダ語">Waar is het toilet?</td>
+                  <td data-label="カタカナ・発音ヒント">ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <section
+          id="mode-panel-game"
+          class="mode-panel"
+          role="tabpanel"
+          aria-labelledby="mode-tab-game"
+          data-mode-panel="game"
+          hidden
+          aria-hidden="true"
+        >
+          <section class="card">
+            <h2>フレーズチャレンジモード（準備中）</h2>
+            <p>
+              クイズやテンポ良い早押し対戦など、遊びながら定番フレーズを定着させる要素を順次追加予定です。
+            </p>
+            <p>
+              現在は「フレーズ学習モード」で発音チェックやフレーズ暗記の土台づくりを行い、公開を楽しみにお待ちください。
+            </p>
+          </section>
+        </section>
       </div>
-      <p id="speech-recognition-notice" class="recognition-notice is-hidden" aria-live="polite"></p>
-    </section>
-
-    <section class="card phrase-section">
-      <h3>挨拶</h3>
-      <table class="phrase-table">
-        <thead>
-          <tr>
-            <th scope="col">日本語</th>
-            <th scope="col">オランダ語</th>
-            <th scope="col">カタカナ・発音ヒント</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-label="日本語"><strong>おはようございます。</strong>丁寧な朝の挨拶</td>
-            <td data-label="オランダ語">Goedemorgen.</td>
-            <td data-label="カタカナ・発音ヒント">フーデモルヘン /ɣudəˈmɔr.ɣə(n)/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>こんにちは。</strong>日中の挨拶</td>
-            <td data-label="オランダ語">Goedemiddag.</td>
-            <td data-label="カタカナ・発音ヒント">フーデミダフ /ɣudəˈmɪdɑx/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>こんばんは。</strong>夕方以降の挨拶</td>
-            <td data-label="オランダ語">Goedenavond.</td>
-            <td data-label="カタカナ・発音ヒント">フーデナーフォント /ɣudəˈnaːvɔnt/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>はじめまして。</strong>初対面の挨拶</td>
-            <td data-label="オランダ語">Aangenaam.</td>
-            <td data-label="カタカナ・発音ヒント">アーネナーム /ˈaːŋɣənaːm/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>さようなら。</strong>別れの挨拶</td>
-            <td data-label="オランダ語">Tot ziens.</td>
-            <td data-label="カタカナ・発音ヒント">トッツィンス /tɔt ˈzins/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>また後でね。</strong>カジュアルな別れ</td>
-            <td data-label="オランダ語">Tot later.</td>
-            <td data-label="カタカナ・発音ヒント">トト ラーテル /tɔt ˈlaːtər/</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="card phrase-section">
-      <h3>旅行</h3>
-      <table class="phrase-table">
-        <thead>
-          <tr>
-            <th scope="col">日本語</th>
-            <th scope="col">オランダ語</th>
-            <th scope="col">カタカナ・発音ヒント</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-label="日本語"><strong>駅はどこですか？</strong>場所を尋ねる</td>
-            <td data-label="オランダ語">Waar is het station?</td>
-            <td data-label="カタカナ・発音ヒント">ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>この列車はアムステルダム行きですか？</strong></td>
-            <td data-label="オランダ語">Gaat deze trein naar Amsterdam?</td>
-            <td data-label="カタカナ・発音ヒント">ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>切符を2枚ください。</strong></td>
-            <td data-label="オランダ語">Mag ik twee kaartjes alstublieft?</td>
-            <td data-label="カタカナ・発音ヒント">マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>チェックインをお願いします。</strong>ホテルで</td>
-            <td data-label="オランダ語">Ik wil graag inchecken.</td>
-            <td data-label="カタカナ・発音ヒント">イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>おすすめのレストランはありますか？</strong></td>
-            <td data-label="オランダ語">Heeft u een aanbeveling voor een restaurant?</td>
-            <td data-label="カタカナ・発音ヒント">ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>助けが必要です。</strong>緊急時</td>
-            <td data-label="オランダ語">Ik heb hulp nodig.</td>
-            <td data-label="カタカナ・発音ヒント">イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/</td>
-          </tr>
-          <tr>
-            <td data-label="日本語"><strong>トイレはどこですか？</strong></td>
-            <td data-label="オランダ語">Waar is het toilet?</td>
-            <td data-label="カタカナ・発音ヒント">ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    </div>
   </main>
 
   <footer>
@@ -466,6 +577,87 @@
   </footer>
 
   <script>
+    const modeContainer = document.querySelector('.main-container');
+    const modeButtons = modeContainer
+      ? Array.from(modeContainer.querySelectorAll('[data-mode]'))
+      : [];
+    const modePanels = modeContainer
+      ? Array.from(modeContainer.querySelectorAll('[data-mode-panel]'))
+      : [];
+
+    if (modeContainer && modeButtons.length > 0 && modePanels.length > 0) {
+      const setActiveMode = (mode) => {
+        modeContainer.dataset.activeMode = mode;
+
+        modeButtons.forEach((button) => {
+          const targetMode = button.getAttribute('data-mode');
+          const isActive = targetMode === mode;
+
+          button.setAttribute('aria-selected', String(isActive));
+          button.setAttribute('tabindex', isActive ? '0' : '-1');
+
+        });
+
+        modePanels.forEach((panel) => {
+          const panelMode = panel.getAttribute('data-mode-panel');
+          const isActive = panelMode === mode;
+
+          panel.toggleAttribute('hidden', !isActive);
+          panel.setAttribute('aria-hidden', String(!isActive));
+        });
+      };
+
+      const availableModes = modeButtons
+        .map((button) => button.getAttribute('data-mode'))
+        .filter((value) => typeof value === 'string' && value.length > 0);
+
+      let initialMode = modeContainer.dataset.activeMode;
+
+      if (!initialMode || !availableModes.includes(initialMode)) {
+        initialMode = availableModes[0];
+      }
+
+      setActiveMode(initialMode);
+
+      modeButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          const mode = button.getAttribute('data-mode');
+
+          if (mode) {
+            setActiveMode(mode);
+            button.focus();
+          }
+        });
+
+        button.addEventListener('keydown', (event) => {
+          const { key } = event;
+          let targetIndex = null;
+
+          if (key === 'ArrowRight' || key === 'ArrowDown') {
+            targetIndex = (index + 1) % modeButtons.length;
+          } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+            targetIndex = (index - 1 + modeButtons.length) % modeButtons.length;
+          } else if (key === 'Home') {
+            targetIndex = 0;
+          } else if (key === 'End') {
+            targetIndex = modeButtons.length - 1;
+          }
+
+          if (targetIndex !== null) {
+            event.preventDefault();
+
+            const targetButton = modeButtons[targetIndex];
+            const mode = targetButton?.getAttribute('data-mode');
+
+            if (mode) {
+              setActiveMode(mode);
+              targetButton.focus();
+            }
+          }
+        });
+      });
+    }
+
     document.querySelectorAll('.toggle-translation').forEach((button) => {
       button.addEventListener('click', () => {
         const translation = button.previousElementSibling;
