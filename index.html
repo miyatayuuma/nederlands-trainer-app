@@ -419,20 +419,24 @@
 
     .game-card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .game-card-column {
+      display: grid;
+      grid-template-rows: repeat(5, minmax(0, auto));
+      gap: 12px;
+      align-content: start;
     }
 
     .game-card {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
       border-radius: 18px;
-      padding: 16px;
+      padding: 12px;
       background: var(--card-bg);
       border: 2px solid transparent;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
       transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -445,16 +449,22 @@
     }
 
     .game-card-main {
+      width: 100%;
       border: none;
       background: rgba(255, 255, 255, 0.6);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px 12px;
       font-size: 1.05rem;
       font-weight: 600;
       text-align: center;
       color: var(--fg);
       cursor: pointer;
       transition: background 0.2s ease;
+    }
+
+    .game-card-text {
+      display: block;
+      line-height: 1.4;
     }
 
     .game-card[data-lang="nl"] .game-card-main {
@@ -464,57 +474,6 @@
     .game-card-main:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
-    }
-
-    .game-card-label {
-      display: block;
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-    }
-
-    .game-card-actions {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .card-action {
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: none;
-      background: rgba(31, 41, 51, 0.12);
-      color: var(--fg);
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-
-    .card-action.is-active {
-      background: var(--accent);
-      color: #ffffff;
-    }
-
-    .card-action:hover,
-    .card-action:focus-visible {
-      background: rgba(31, 41, 51, 0.2);
-      outline: none;
-      transform: translateY(-1px);
-    }
-
-    .card-action:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .game-card-hint {
-      margin: 0;
-      font-size: 0.85rem;
-      color: var(--muted);
-      white-space: pre-wrap;
-      text-align: center;
-      min-height: 1.3em;
     }
 
     .game-card.is-selected {
@@ -602,22 +561,20 @@
       }
 
       .game-card-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 14px;
       }
 
+      .game-card-column {
+        gap: 10px;
+      }
+
       .game-card {
-        padding: 14px;
+        padding: 10px;
       }
 
       .game-card-main {
-        font-size: 1.1rem;
-        padding: 18px 12px;
-      }
-
-      .card-action {
-        font-size: 0.9rem;
-        padding: 7px 14px;
+        font-size: 1rem;
+        padding: 12px 10px;
       }
 
       .phrase-table thead {
@@ -673,8 +630,11 @@
       }
 
       .game-card-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
+      }
+
+      .game-card-column {
+        gap: 8px;
       }
 
       .game-card {
@@ -682,11 +642,7 @@
       }
 
       .game-card-main {
-        font-size: 1.2rem;
-      }
-
-      .game-card-actions {
-        gap: 6px;
+        font-size: 1.05rem;
       }
     }
 
@@ -2015,8 +1971,7 @@
       element.classList.add('score-pulse');
     };
 
-    const stagePairCount = (stageNumber) =>
-      Math.min(3 + stageNumber, Math.min(6, PHRASE_DATA.length));
+    const stagePairCount = () => Math.min(5, PHRASE_DATA.length);
 
     const setStatus = (message) => {
       if (gameStatus) {
@@ -2042,30 +1997,6 @@
       }
     };
 
-    const buildHintMessage = (phrase, lang) => {
-      if (!phrase) {
-        return '';
-      }
-
-      if (lang === 'ja') {
-        let hint = `オランダ語: ${phrase.nl}`;
-
-        if (phrase.hint) {
-          hint += `\n発音ヒント: ${phrase.hint}`;
-        }
-
-        return hint;
-      }
-
-      let hint = `日本語: ${phrase.ja}`;
-
-      if (phrase.hint) {
-        hint += `\n発音ヒント: ${phrase.hint}`;
-      }
-
-      return hint;
-    };
-
     const createGameCard = (phrase, lang) => {
       const card = document.createElement('div');
       card.className = 'game-card';
@@ -2076,47 +2007,31 @@
       mainButton.type = 'button';
       mainButton.className = 'game-card-main';
 
-      const labelText = lang === 'ja' ? '日本語' : 'オランダ語';
+      const labelText = lang === 'ja' ? '日本語カード' : 'オランダ語カード';
       const displayText = lang === 'ja' ? phrase.ja : phrase.nl;
-      mainButton.setAttribute('aria-label', `${labelText}カード: ${displayText}`);
+      mainButton.setAttribute('aria-label', `${labelText}: ${displayText}`);
 
       const textSpan = document.createElement('span');
       textSpan.className = 'game-card-text';
       textSpan.textContent = displayText;
 
-      const labelSpan = document.createElement('span');
-      labelSpan.className = 'game-card-label';
-      labelSpan.textContent = labelText;
+      mainButton.append(textSpan);
 
-      mainButton.append(textSpan, labelSpan);
-
-      const actions = document.createElement('div');
-      actions.className = 'game-card-actions';
-
-      const speakButton = document.createElement('button');
-      speakButton.type = 'button';
-      speakButton.className = 'card-action speak-control';
-      speakButton.dataset.phraseId = phrase.id;
-      speakButton.dataset.defaultLabel = `${phrase.ja} のオランダ語を再生`;
-      speakButton.dataset.activeLabel = `${phrase.ja} のオランダ語を再生中`;
-      speakButton.setAttribute('aria-label', speakButton.dataset.defaultLabel);
-      speakButton.textContent = '🔊';
-
-      const hintButton = document.createElement('button');
-      hintButton.type = 'button';
-      hintButton.className = 'card-action card-hint';
-      hintButton.setAttribute('aria-expanded', 'false');
-      hintButton.textContent = 'ヒント';
-
-      actions.append(speakButton, hintButton);
-
-      const hintText = document.createElement('p');
-      hintText.className = 'game-card-hint';
-      hintText.hidden = true;
-
-      card.append(mainButton, actions, hintText);
+      card.append(mainButton);
 
       return card;
+    };
+
+    const createCardColumn = (lang) => {
+      const column = document.createElement('div');
+      column.className = 'game-card-column';
+      column.dataset.lang = lang;
+      column.setAttribute(
+        'aria-label',
+        lang === 'nl' ? 'オランダ語のカード' : '日本語のカード'
+      );
+      column.setAttribute('role', 'group');
+      return column;
     };
 
     const resetGame = (announce = true) => {
@@ -2287,10 +2202,16 @@
       gameGrid.setAttribute('aria-busy', 'true');
       gameGrid.innerHTML = '';
 
-      const fragment = document.createDocumentFragment();
+      const dutchColumn = createCardColumn('nl');
+      const japaneseColumn = createCardColumn('ja');
+
       cards.forEach(({ phrase, lang }) => {
-        fragment.appendChild(createGameCard(phrase, lang));
+        const targetColumn = lang === 'nl' ? dutchColumn : japaneseColumn;
+        targetColumn.appendChild(createGameCard(phrase, lang));
       });
+
+      const fragment = document.createDocumentFragment();
+      fragment.append(dutchColumn, japaneseColumn);
 
       gameGrid.appendChild(fragment);
       gameGrid.removeAttribute('aria-busy');
@@ -2311,41 +2232,6 @@
 
     if (gameGrid) {
       gameGrid.addEventListener('click', (event) => {
-        const hintButton = event.target.closest('.card-hint');
-
-        if (hintButton) {
-          event.preventDefault();
-          event.stopPropagation();
-
-          const card = hintButton.closest('.game-card');
-          const pairId = card?.getAttribute('data-pair-id');
-          const lang = card?.getAttribute('data-lang');
-
-          if (!card || !pairId || !lang) {
-            return;
-          }
-
-          const phrase = PHRASE_LOOKUP.get(pairId);
-          const hintArea = card.querySelector('.game-card-hint');
-
-          if (!phrase || !hintArea) {
-            return;
-          }
-
-          const willShow = hintArea.hidden;
-
-          if (willShow) {
-            hintArea.textContent = buildHintMessage(phrase, lang);
-          }
-
-          hintArea.hidden = !willShow;
-          hintButton.textContent = willShow ? 'ヒントをとじる' : 'ヒント';
-          hintButton.setAttribute('aria-expanded', String(willShow));
-          setStatus(willShow ? 'ヒントを参考にしてペアを探してみよう！' : 'ヒントを閉じました。');
-
-          return;
-        }
-
         const mainButton = event.target.closest('.game-card-main');
 
         if (mainButton) {
