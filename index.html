@@ -143,12 +143,84 @@
       visibility: hidden;
     }
 
-    .placeholder {
-      text-align: center;
-      padding: 48px 20px;
-      border: 2px dashed rgba(96, 110, 133, 0.25);
-      border-radius: 18px;
+    .phrase-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .phrase-section h3 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .phrase-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .phrase-table th,
+    .phrase-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(96, 110, 133, 0.18);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .phrase-table thead th {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--muted);
+    }
+
+    .phrase-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .phrase-table td strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .phrase-table thead {
+        display: none;
+      }
+
+      .phrase-table,
+      .phrase-table tbody,
+      .phrase-table tr,
+      .phrase-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .phrase-table tr {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(96, 110, 133, 0.18);
+      }
+
+      .phrase-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .phrase-table td {
+        border: none;
+        padding: 6px 0;
+      }
+
+      .phrase-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
     }
 
     footer {
@@ -209,8 +281,99 @@
       </ul>
     </section>
 
-    <section class="placeholder">
-      新しいフレーズ練習コンテンツは現在準備中です。公開まで今しばらくお待ちください。
+    <section class="card phrase-section">
+      <h3>挨拶</h3>
+      <table class="phrase-table">
+        <thead>
+          <tr>
+            <th scope="col">日本語</th>
+            <th scope="col">オランダ語</th>
+            <th scope="col">カタカナ・発音ヒント</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="日本語"><strong>おはようございます。</strong>丁寧な朝の挨拶</td>
+            <td data-label="オランダ語">Goedemorgen.</td>
+            <td data-label="カタカナ・発音ヒント">フーデモルヘン /ɣudəˈmɔr.ɣə(n)/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>こんにちは。</strong>日中の挨拶</td>
+            <td data-label="オランダ語">Goedemiddag.</td>
+            <td data-label="カタカナ・発音ヒント">フーデミダフ /ɣudəˈmɪdɑx/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>こんばんは。</strong>夕方以降の挨拶</td>
+            <td data-label="オランダ語">Goedenavond.</td>
+            <td data-label="カタカナ・発音ヒント">フーデナーフォント /ɣudəˈnaːvɔnt/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>はじめまして。</strong>初対面の挨拶</td>
+            <td data-label="オランダ語">Aangenaam.</td>
+            <td data-label="カタカナ・発音ヒント">アーネナーム /ˈaːŋɣənaːm/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>さようなら。</strong>別れの挨拶</td>
+            <td data-label="オランダ語">Tot ziens.</td>
+            <td data-label="カタカナ・発音ヒント">トッツィンス /tɔt ˈzins/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>また後でね。</strong>カジュアルな別れ</td>
+            <td data-label="オランダ語">Tot later.</td>
+            <td data-label="カタカナ・発音ヒント">トト ラーテル /tɔt ˈlaːtər/</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card phrase-section">
+      <h3>旅行</h3>
+      <table class="phrase-table">
+        <thead>
+          <tr>
+            <th scope="col">日本語</th>
+            <th scope="col">オランダ語</th>
+            <th scope="col">カタカナ・発音ヒント</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="日本語"><strong>駅はどこですか？</strong>場所を尋ねる</td>
+            <td data-label="オランダ語">Waar is het station?</td>
+            <td data-label="カタカナ・発音ヒント">ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>この列車はアムステルダム行きですか？</strong></td>
+            <td data-label="オランダ語">Gaat deze trein naar Amsterdam?</td>
+            <td data-label="カタカナ・発音ヒント">ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>切符を2枚ください。</strong></td>
+            <td data-label="オランダ語">Mag ik twee kaartjes alstublieft?</td>
+            <td data-label="カタカナ・発音ヒント">マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>チェックインをお願いします。</strong>ホテルで</td>
+            <td data-label="オランダ語">Ik wil graag inchecken.</td>
+            <td data-label="カタカナ・発音ヒント">イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>おすすめのレストランはありますか？</strong></td>
+            <td data-label="オランダ語">Heeft u een aanbeveling voor een restaurant?</td>
+            <td data-label="カタカナ・発音ヒント">ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>助けが必要です。</strong>緊急時</td>
+            <td data-label="オランダ語">Ik heb hulp nodig.</td>
+            <td data-label="カタカナ・発音ヒント">イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/</td>
+          </tr>
+          <tr>
+            <td data-label="日本語"><strong>トイレはどこですか？</strong></td>
+            <td data-label="オランダ語">Waar is het toilet?</td>
+            <td data-label="カタカナ・発音ヒント">ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </main>
 
