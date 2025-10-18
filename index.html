@@ -1200,10 +1200,14 @@
               <button id="game-reset-button" class="game-button secondary" type="button">スコアをリセット</button>
             </div>
             <p id="game-status" class="game-status" aria-live="polite">ステージを始めてカードをマッチさせましょう！</p>
+            <p id="game-speech-instruction" class="visually-hidden">
+              オランダ語カードはタップすると発音が再生されます。音声のヒントを聞きながら対応する日本語カードを探してみましょう。
+            </p>
             <div
               id="game-grid"
               class="game-card-grid"
               aria-label="日本語とオランダ語のカードをマッチさせるグリッド"
+              aria-describedby="game-speech-instruction"
               aria-live="polite"
             ></div>
           </section>
@@ -2003,6 +2007,9 @@
       }
     };
 
+    const formatStatusWithSpeechCue = (didSpeak, message) =>
+      didSpeak ? `🔊 オランダ語カードの発音を再生したよ。${message}` : message;
+
     const updateScoreboard = () => {
       if (stageDisplay) {
         stageDisplay.textContent = gameState.stage;
@@ -2041,6 +2048,7 @@
 
       if (lang === 'nl') {
         mainButton.title = 'タップするとオランダ語の発音が再生されます';
+        mainButton.setAttribute('aria-describedby', 'game-speech-instruction');
       } else {
         mainButton.title = 'タップして対応するカードを探しましょう';
       }
@@ -2054,6 +2062,18 @@
       card.append(mainButton);
 
       return card;
+    };
+
+    const speakCardIfDutch = ({ lang, pairId, alreadySelected = false } = {}) => {
+      if (alreadySelected || lang !== 'nl' || !pairId) {
+        return false;
+      }
+
+      if (typeof speakDutchPhrase !== 'function') {
+        return false;
+      }
+
+      return speakDutchPhrase({ phraseId: pairId });
     };
 
     const createCardColumn = (lang) => {
@@ -2127,7 +2147,7 @@
       setStatus(`✨ ステージ${gameState.stage}クリア！ボーナス${bonus}点を獲得したよ。`);
     };
 
-    const evaluateSelection = () => {
+    const evaluateSelection = ({ didSpeak = false } = {}) => {
       if (gameState.selection.length < 2) {
         return;
       }
@@ -2136,6 +2156,10 @@
 
       const [first, second] = gameState.selection;
       const isMatch = first.pairId === second.pairId && first.lang !== second.lang;
+
+      const setStatusWithCue = (message) => {
+        setStatus(formatStatusWithSpeechCue(didSpeak, message));
+      };
 
       if (isMatch) {
         const phrase = PHRASE_LOOKUP.get(first.pairId);
@@ -2158,9 +2182,9 @@
         pulseElement(streakDisplay);
 
         if (phrase) {
-          setStatus(`🎉 正解！「${phrase.ja}」と「${phrase.nl}」で${gained}点ゲット！`);
+          setStatusWithCue(`🎉 正解！「${phrase.ja}」と「${phrase.nl}」で${gained}点ゲット！`);
         } else {
-          setStatus('🎉 正解！すばらしい！');
+          setStatusWithCue('🎉 正解！すばらしい！');
         }
 
         gameState.selection = [];
@@ -2176,7 +2200,7 @@
       gameState.streak = 0;
       updateScoreboard();
       pulseElement(streakDisplay);
-      setStatus('あれ？違うみたい。落ち着いてもう一度！');
+      setStatusWithCue('あれ？違うみたい。落ち着いてもう一度！');
 
       const [firstCard, secondCard] = [first.card, second.card];
 
@@ -2205,18 +2229,12 @@
       }
 
       const isAlreadySelected = card.classList.contains('is-selected');
-      const didSpeak =
-        lang === 'nl' &&
-        !isAlreadySelected &&
-        typeof speakDutchPhrase === 'function' &&
-        speakDutchPhrase({ phraseId: pairId });
-      const statusWithSpeechCue = (message) =>
-        didSpeak ? `🔊 オランダ語カードの発音を再生したよ。${message}` : message;
 
       if (gameState.selection.length === 0) {
+        const didSpeak = speakCardIfDutch({ lang, pairId, alreadySelected: isAlreadySelected });
         gameState.selection.push({ card, pairId, lang });
         card.classList.add('is-selected');
-        setStatus(statusWithSpeechCue('もう1枚選んでペアを作ろう！'));
+        setStatus(formatStatusWithSpeechCue(didSpeak, 'もう1枚選んでペアを作ろう！'));
         return;
       }
 
@@ -2225,21 +2243,23 @@
       if (firstSelection.card === card) {
         card.classList.remove('is-selected');
         gameState.selection = [];
-        setStatus(statusWithSpeechCue('カードを選び直したよ。'));
+        setStatus(formatStatusWithSpeechCue(false, 'カードを選び直したよ。'));
         return;
       }
 
       if (firstSelection.lang === lang) {
+        const didSpeak = speakCardIfDutch({ lang, pairId });
         firstSelection.card.classList.remove('is-selected');
         gameState.selection = [{ card, pairId, lang }];
         card.classList.add('is-selected');
-        setStatus(statusWithSpeechCue('もう1枚選んでペアを作ろう！'));
+        setStatus(formatStatusWithSpeechCue(didSpeak, 'もう1枚選んでペアを作ろう！'));
         return;
       }
 
+      const didSpeak = speakCardIfDutch({ lang, pairId, alreadySelected: isAlreadySelected });
       gameState.selection.push({ card, pairId, lang });
       card.classList.add('is-selected');
-      evaluateSelection();
+      evaluateSelection({ didSpeak });
     };
 
     const startStage = () => {
