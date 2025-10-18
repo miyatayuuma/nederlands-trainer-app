@@ -2510,7 +2510,7 @@
     };
 
 
-    const showPhraseDataError = (message) => {
+    const showPhraseDataError = (error) => {
       const errorIndicator = document.getElementById('phrase-error');
       const loadingIndicator = document.getElementById('phrase-loading');
 
@@ -2519,7 +2519,81 @@
       }
 
       if (errorIndicator) {
-        errorIndicator.textContent = message;
+        const escapeHtml = (value) =>
+          String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const rawMessage =
+          typeof error === 'string'
+            ? error
+            : error && typeof error.message === 'string'
+              ? error.message
+              : '不明なエラーです。';
+        const errorName =
+          typeof error === 'object' && error !== null && 'name' in error && typeof error.name === 'string'
+            ? error.name
+            : undefined;
+
+        const normalizedMessage = rawMessage.toLowerCase();
+        const isTypeError = error instanceof TypeError || errorName === 'TypeError' || normalizedMessage.includes('typeerror');
+        const httpMatch = rawMessage.match(/http\s+(\d{3})/i);
+        const httpStatus = httpMatch ? httpMatch[1] : null;
+        const isFileProtocol = window.location.protocol === 'file:';
+        const stackTrace =
+          typeof error === 'object' && error !== null && 'stack' in error && typeof error.stack === 'string'
+            ? error.stack
+            : undefined;
+
+        let primaryMessage = 'フレーズデータの読み込みに失敗しました。';
+        const suggestions = [];
+
+        if (httpStatus === '404') {
+          primaryMessage = 'フレーズデータ (data/phrases.json) が見つかりません。ファイル名と配置を確認してください。';
+        } else if (httpStatus) {
+          primaryMessage = `サーバーが HTTP ${httpStatus} を返しました。サーバーログやアクセス権限を確認してください。`;
+        } else if (isTypeError) {
+          primaryMessage = 'ネットワークに接続できないためフレーズデータを取得できませんでした。インターネット接続やローカルサーバーの状態を確認してください。';
+        }
+
+        if (isFileProtocol) {
+          suggestions.push('ブラウザで直接 index.html を開くとデータを取得できないため、ローカル HTTP サーバー経由でアクセスしてください。');
+        }
+
+        suggestions.push('プロジェクトのルートで <code>npx serve</code> を実行するか、VS Code の Live Server 拡張機能で配信すると解決する場合があります。');
+
+        const actionLink = `
+          <div class="phrase-error-actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a class="mode-button" href="https://github.com/vercel/serve#readme" target="_blank" rel="noopener">セットアップ手順を見る</a>
+            <a class="mode-button" href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer" target="_blank" rel="noopener">Live Server を開く</a>
+          </div>
+        `;
+
+        const suggestionMarkup =
+          suggestions.length > 0
+            ? `<ul style="margin:12px 0 0;padding-left:1.4em;">${suggestions
+                .map((item) => `<li style="margin-bottom:6px;">${item}</li>`)
+                .join('')}</ul>`
+            : '';
+
+        const detailsMarkup = rawMessage
+          ? `<details style="margin-top:16px;">` +
+            '<summary style="cursor:pointer;">技術的な詳細を表示</summary>' +
+            `<pre style="margin-top:8px;white-space:pre-wrap;word-break:break-all;">${escapeHtml(rawMessage)}</pre>` +
+            (errorName && errorName !== 'Error'
+              ? `<p style="margin-top:8px;font-size:0.9em;color:var(--muted);">エラー種別: ${escapeHtml(errorName)}</p>`
+              : '') +
+            (stackTrace && stackTrace !== rawMessage
+              ? `<pre style="margin-top:8px;white-space:pre-wrap;word-break:break-all;font-size:0.85em;">${escapeHtml(stackTrace)}</pre>`
+              : '') +
+            '</details>'
+          : '';
+
+        errorIndicator.innerHTML =
+          `<p style="margin:0;">${primaryMessage}</p>` + suggestionMarkup + actionLink + detailsMarkup;
         errorIndicator.classList.remove('is-hidden');
       }
     };
@@ -2539,7 +2613,7 @@
         return model;
       } catch (error) {
         console.error(error);
-        showPhraseDataError(`フレーズデータの読み込みに失敗しました: ${error.message}`);
+        showPhraseDataError(error);
         return null;
       }
     };
