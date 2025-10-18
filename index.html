@@ -517,6 +517,13 @@
       background: rgba(15, 23, 42, 0.08);
     }
 
+    .scenario-note {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
     .scenario-category + .scenario-category {
       margin-top: 20px;
     }
@@ -1142,6 +1149,31 @@
 
     const DATA_URL = 'data/phrases.json';
     const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const ESSENTIALS_CATEGORY_SLUG = 'essentials';
+    const ESSENTIALS_CATEGORY_NAMES = new Set([
+      '基本表現',
+      '基本フレーズ',
+      '基礎表現',
+      'Essentials',
+    ]);
+    const ESSENTIALS_SCENARIO_VALUE = 'essentials';
+
+    const createSlug = (value) => {
+      if (typeof value !== 'string') {
+        return '';
+      }
+
+      const normalized = value.normalize('NFKC').trim();
+      const slug = normalized
+        .toLowerCase()
+        .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+        .replace(/^-+|-+$/g, '');
+
+      return slug || normalized;
+    };
+
+    const isEssentialsCategory = (categoryName) =>
+      categoryName && ESSENTIALS_CATEGORY_NAMES.has(categoryName);
 
     const loadPhraseData = async () => {
       const response = await fetch(DATA_URL, { cache: 'no-store' });
@@ -1170,9 +1202,19 @@
         const tags = Array.isArray(phrase.tags)
           ? phrase.tags.filter((value) => typeof value === 'string' && value.trim().length > 0)
           : [];
+        const categoryName =
+          typeof phrase.category === 'string' && phrase.category.trim().length > 0
+            ? phrase.category.trim()
+            : 'その他';
+        const categorySlug = isEssentialsCategory(categoryName)
+          ? ESSENTIALS_CATEGORY_SLUG
+          : createSlug(categoryName);
 
         return {
           ...phrase,
+          category: categoryName,
+          categorySlug,
+          isEssentials: categorySlug === ESSENTIALS_CATEGORY_SLUG,
           scenario: scenario.length > 0 ? scenario : ['その他'],
           level: level.length > 0 ? level : ['A1'],
           tags,
@@ -1429,6 +1471,17 @@
         scenarioSelect.appendChild(option);
       });
 
+      const hasEssentialsCategory = model.phrases.some(
+        (phrase) => phrase.categorySlug === ESSENTIALS_CATEGORY_SLUG
+      );
+
+      if (hasEssentialsCategory) {
+        const essentialsOption = document.createElement('option');
+        essentialsOption.value = ESSENTIALS_SCENARIO_VALUE;
+        essentialsOption.textContent = '基本表現（まとめ）';
+        scenarioSelect.appendChild(essentialsOption);
+      }
+
       levelSelect.innerHTML = '';
       const levelDefaultOption = document.createElement('option');
       levelDefaultOption.value = 'all';
@@ -1590,19 +1643,72 @@
         return wrapper;
       };
 
+      const createEssentialsSection = (phrases) => {
+        if (!phrases || phrases.length === 0) {
+          return null;
+        }
+
+        const section = document.createElement('section');
+        section.className = 'scenario-card';
+        section.dataset.scenario = ESSENTIALS_SCENARIO_VALUE;
+
+        const header = document.createElement('div');
+        header.className = 'scenario-card-header';
+        const title = document.createElement('h3');
+        title.textContent = '基本表現（Essentials）';
+        header.appendChild(title);
+        const count = document.createElement('span');
+        count.className = 'scenario-count';
+        count.textContent = `${phrases.length}件`;
+        header.appendChild(count);
+        section.appendChild(header);
+
+        const note = document.createElement('p');
+        note.className = 'scenario-note';
+        note.textContent =
+          '丁寧な感謝や謝罪など、滞在中すぐに使える基本表現をまとめたショートリストです。';
+        section.appendChild(note);
+
+        const categoryMap = new Map();
+        phrases.forEach((phrase) => {
+          const categoryName = phrase.category ?? '基本表現';
+          if (!categoryMap.has(categoryName)) {
+            categoryMap.set(categoryName, []);
+          }
+          categoryMap.get(categoryName).push(phrase);
+        });
+
+        categoryMap.forEach((phraseList, categoryName) => {
+          section.appendChild(
+            createCategorySection({ name: categoryName, phrases: phraseList })
+          );
+        });
+
+        return section;
+      };
+
       const render = () => {
         const scenarioValue = scenarioSelect.value;
         const levelValue = levelSelect.value;
         const sortValue = sortSelect.value;
         const selectedTags = getSelectedTags();
 
+        const isEssentialsScenario =
+          hasEssentialsCategory && scenarioValue === ESSENTIALS_SCENARIO_VALUE;
+
         const filtered = model.filter({
-          scenario: scenarioValue,
+          scenario: isEssentialsScenario ? null : scenarioValue,
           level: levelValue,
           tags: selectedTags,
         });
-        const sorted = model.sort(filtered, sortValue);
-        const grouped = model.group(sorted, scenarioValue);
+        const filteredForScenario = isEssentialsScenario
+          ? filtered.filter((phrase) => phrase.categorySlug === ESSENTIALS_CATEGORY_SLUG)
+          : filtered;
+        const sorted = model.sort(filteredForScenario, sortValue);
+        const essentialsSorted = isEssentialsScenario
+          ? sorted
+          : sorted.filter((phrase) => phrase.categorySlug === ESSENTIALS_CATEGORY_SLUG);
+        const grouped = isEssentialsScenario ? [] : model.group(sorted, scenarioValue);
 
         if (loadingIndicator) {
           loadingIndicator.classList.add('is-hidden');
@@ -1624,31 +1730,45 @@
 
         updateSummary(sorted.length);
 
-        grouped.forEach((scenarioEntry) => {
-          const scenarioSection = document.createElement('section');
-          scenarioSection.className = 'scenario-card';
+        const shouldRenderEssentialsSection =
+          hasEssentialsCategory &&
+          essentialsSorted.length > 0 &&
+          (isEssentialsScenario || scenarioValue === 'all');
 
-          const header = document.createElement('div');
-          header.className = 'scenario-card-header';
-          const title = document.createElement('h3');
-          title.textContent = scenarioEntry.name;
-          header.appendChild(title);
-          const count = document.createElement('span');
-          count.className = 'scenario-count';
-          const phraseCount = scenarioEntry.categories.reduce(
-            (acc, category) => acc + category.phrases.length,
-            0
-          );
-          count.textContent = `${phraseCount}件`;
-          header.appendChild(count);
-          scenarioSection.appendChild(header);
+        if (shouldRenderEssentialsSection) {
+          const essentialsSection = createEssentialsSection(essentialsSorted);
+          if (essentialsSection) {
+            contentContainer.appendChild(essentialsSection);
+          }
+        }
 
-          scenarioEntry.categories.forEach((category) => {
-            scenarioSection.appendChild(createCategorySection(category));
+        if (!isEssentialsScenario) {
+          grouped.forEach((scenarioEntry) => {
+            const scenarioSection = document.createElement('section');
+            scenarioSection.className = 'scenario-card';
+
+            const header = document.createElement('div');
+            header.className = 'scenario-card-header';
+            const title = document.createElement('h3');
+            title.textContent = scenarioEntry.name;
+            header.appendChild(title);
+            const count = document.createElement('span');
+            count.className = 'scenario-count';
+            const phraseCount = scenarioEntry.categories.reduce(
+              (acc, category) => acc + category.phrases.length,
+              0
+            );
+            count.textContent = `${phraseCount}件`;
+            header.appendChild(count);
+            scenarioSection.appendChild(header);
+
+            scenarioEntry.categories.forEach((category) => {
+              scenarioSection.appendChild(createCategorySection(category));
+            });
+
+            contentContainer.appendChild(scenarioSection);
           });
-
-          contentContainer.appendChild(scenarioSection);
-        });
+        }
 
         if (typeof syncRecognitionControls === 'function') {
           syncRecognitionControls();
