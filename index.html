@@ -139,6 +139,40 @@
       outline-offset: 2px;
     }
 
+    .speak-phrase {
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(31, 41, 51, 0.1);
+      color: var(--fg);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+    .speak-phrase:hover,
+    .speak-phrase:focus {
+      background: rgba(31, 41, 51, 0.18);
+    }
+
+    .speak-phrase:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .speech-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .speech-controls input[type="range"] {
+      accent-color: var(--accent);
+    }
+
     .is-hidden {
       visibility: hidden;
     }
@@ -252,30 +286,39 @@
 
     <section class="card">
       <h2>日常フレーズ集</h2>
+      <div class="speech-controls">
+        <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
+        <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
+      </div>
       <ul class="phrase-list">
         <li>
           <span class="phrase-original">おはようございます。</span>
           <span class="phrase-translation is-hidden">Goedemorgen.</span>
+          <button class="speak-phrase" type="button">再生</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">ありがとうございます。</span>
           <span class="phrase-translation is-hidden">Dank u wel.</span>
+          <button class="speak-phrase" type="button">再生</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">すみません。</span>
           <span class="phrase-translation is-hidden">Pardon.</span>
+          <button class="speak-phrase" type="button">再生</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">駅はどこですか？</span>
           <span class="phrase-translation is-hidden">Waar is het station?</span>
+          <button class="speak-phrase" type="button">再生</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">助けが必要です。</span>
           <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
+          <button class="speak-phrase" type="button">再生</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
       </ul>
@@ -396,6 +439,103 @@
           : '意味を隠す';
       });
     });
+
+    const rateSlider = document.getElementById('speech-rate');
+    const rateValue = document.getElementById('speech-rate-value');
+
+    if (rateSlider && rateValue) {
+      const updateRateLabel = () => {
+        rateValue.textContent = `${parseFloat(rateSlider.value).toFixed(1)}x`;
+      };
+
+      rateSlider.addEventListener('input', updateRateLabel);
+      updateRateLabel();
+    }
+
+    if ('speechSynthesis' in window) {
+      const synthesis = window.speechSynthesis;
+      let availableVoices = [];
+      let activeButton = null;
+
+      const refreshVoices = () => {
+        availableVoices = synthesis
+          .getVoices()
+          .filter((voice) => voice.lang && voice.lang.toLowerCase().startsWith('nl'));
+
+        if (availableVoices.length === 0) {
+          availableVoices = synthesis.getVoices();
+        }
+      };
+
+      refreshVoices();
+      synthesis.addEventListener('voiceschanged', refreshVoices);
+
+      const defaultSpeakLabel = '再生';
+      const activeSpeakLabel = '再生中…';
+
+      const resetActiveButton = () => {
+        if (activeButton) {
+          activeButton.disabled = false;
+          activeButton.textContent = defaultSpeakLabel;
+          activeButton = null;
+        }
+      };
+
+      document.querySelectorAll('.speak-phrase').forEach((button) => {
+        button.addEventListener('click', () => {
+          const parentItem = button.closest('li');
+          const translation = parentItem?.querySelector('.phrase-translation');
+          const dutchText = translation?.textContent?.trim();
+
+          if (!dutchText) {
+            return;
+          }
+
+          if (synthesis.speaking || synthesis.pending) {
+            synthesis.cancel();
+          }
+
+          resetActiveButton();
+
+          const utterance = new SpeechSynthesisUtterance(dutchText);
+          utterance.lang = 'nl-NL';
+
+          if (rateSlider) {
+            utterance.rate = parseFloat(rateSlider.value) || 1;
+          }
+
+          const selectedVoice = availableVoices.find(
+            (voice) => voice.lang && voice.lang.toLowerCase().startsWith('nl')
+          );
+
+          if (selectedVoice) {
+            utterance.voice = selectedVoice;
+          }
+
+          utterance.onend = () => {
+            if (activeButton === button) {
+              button.disabled = false;
+              button.textContent = defaultSpeakLabel;
+              activeButton = null;
+            }
+          };
+
+          utterance.onerror = () => {
+            if (activeButton === button) {
+              button.disabled = false;
+              button.textContent = defaultSpeakLabel;
+              activeButton = null;
+            }
+          };
+
+          activeButton = button;
+          button.disabled = true;
+          button.textContent = activeSpeakLabel;
+
+          synthesis.speak(utterance);
+        });
+      });
+    }
   </script>
 </body>
 </html>
