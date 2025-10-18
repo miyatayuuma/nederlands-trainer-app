@@ -139,7 +139,8 @@
       outline-offset: 2px;
     }
 
-    .speak-phrase {
+    .speak-phrase,
+    .recognize-phrase {
       padding: 4px 12px;
       border-radius: 999px;
       border: none;
@@ -151,13 +152,41 @@
     }
 
     .speak-phrase:hover,
-    .speak-phrase:focus {
+    .speak-phrase:focus,
+    .recognize-phrase:hover,
+    .recognize-phrase:focus {
       background: rgba(31, 41, 51, 0.18);
     }
 
-    .speak-phrase:disabled {
+    .speak-phrase:disabled,
+    .recognize-phrase:disabled {
       cursor: not-allowed;
       opacity: 0.6;
+    }
+
+    .recognition-panel {
+      border-radius: 16px;
+      background: rgba(31, 41, 51, 0.06);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .recognition-panel strong {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .recognition-panel span {
+      word-break: break-word;
+    }
+
+    .recognition-notice {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
     .speech-controls {
@@ -295,33 +324,45 @@
           <span class="phrase-original">おはようございます。</span>
           <span class="phrase-translation is-hidden">Goedemorgen.</span>
           <button class="speak-phrase" type="button">再生</button>
+          <button class="recognize-phrase" type="button">発声テスト</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">ありがとうございます。</span>
           <span class="phrase-translation is-hidden">Dank u wel.</span>
           <button class="speak-phrase" type="button">再生</button>
+          <button class="recognize-phrase" type="button">発声テスト</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">すみません。</span>
           <span class="phrase-translation is-hidden">Pardon.</span>
           <button class="speak-phrase" type="button">再生</button>
+          <button class="recognize-phrase" type="button">発声テスト</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">駅はどこですか？</span>
           <span class="phrase-translation is-hidden">Waar is het station?</span>
           <button class="speak-phrase" type="button">再生</button>
+          <button class="recognize-phrase" type="button">発声テスト</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
         <li>
           <span class="phrase-original">助けが必要です。</span>
           <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
           <button class="speak-phrase" type="button">再生</button>
+          <button class="recognize-phrase" type="button">発声テスト</button>
           <button class="toggle-translation" type="button">意味を表示</button>
         </li>
       </ul>
+      <div id="recognition-panel" class="recognition-panel is-hidden" aria-live="polite">
+        <p class="recognition-status"><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えて「発声テスト」を押すと発音チェックができます。</span></p>
+        <p class="recognition-target"><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
+        <p class="recognition-result"><strong>認識結果:</strong> <span id="recognition-text">-</span></p>
+        <p class="recognition-score"><strong>マッチ率:</strong> <span id="recognition-score">-</span></p>
+      </div>
+      <p id="speech-recognition-notice" class="recognition-notice is-hidden" aria-live="polite"></p>
     </section>
 
     <section class="card phrase-section">
@@ -535,6 +576,183 @@
           synthesis.speak(utterance);
         });
       });
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognitionNotice = document.getElementById('speech-recognition-notice');
+    const recognitionPanel = document.getElementById('recognition-panel');
+    const recognitionStatus = document.getElementById('recognition-status');
+    const recognitionTarget = document.getElementById('recognition-target');
+    const recognitionText = document.getElementById('recognition-text');
+    const recognitionScore = document.getElementById('recognition-score');
+
+    const defaultStatusMessage = 'マイクの許可を与えて「発声テスト」を押すと発音チェックができます。';
+
+    const sanitizePhrase = (text) =>
+      text
+        .toLowerCase()
+        .replace(/[^a-zà-ž\s']/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const computeSimilarity = (a, b) => {
+      const source = sanitizePhrase(a);
+      const target = sanitizePhrase(b);
+
+      if (!source && !target) {
+        return 1;
+      }
+
+      if (!source || !target) {
+        return 0;
+      }
+
+      const rows = source.length + 1;
+      const cols = target.length + 1;
+      const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+      for (let i = 0; i < rows; i += 1) {
+        dp[i][0] = i;
+      }
+
+      for (let j = 0; j < cols; j += 1) {
+        dp[0][j] = j;
+      }
+
+      for (let i = 1; i < rows; i += 1) {
+        for (let j = 1; j < cols; j += 1) {
+          const cost = source[i - 1] === target[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + cost
+          );
+        }
+      }
+
+      const distance = dp[rows - 1][cols - 1];
+      const longest = Math.max(source.length, target.length);
+
+      return longest === 0 ? 1 : 1 - distance / longest;
+    };
+
+    if (
+      recognitionNotice &&
+      recognitionPanel &&
+      recognitionStatus &&
+      recognitionTarget &&
+      recognitionText &&
+      recognitionScore
+    ) {
+      if (!SpeechRecognition) {
+        recognitionNotice.textContent =
+          'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
+        recognitionNotice.classList.remove('is-hidden');
+        if (recognitionPanel) {
+          recognitionPanel.classList.add('is-hidden');
+        }
+      } else {
+        recognitionPanel.classList.remove('is-hidden');
+        recognitionNotice.textContent = '初回利用時はブラウザのマイク許可が求められます。';
+        recognitionNotice.classList.remove('is-hidden');
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'nl-NL';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        let activeRecognitionButton = null;
+        let targetPhrase = '';
+
+        const releaseRecognitionButton = () => {
+          if (activeRecognitionButton) {
+            activeRecognitionButton.disabled = false;
+            activeRecognitionButton.textContent = '発声テスト';
+            activeRecognitionButton = null;
+          }
+        };
+
+        recognition.addEventListener('start', () => {
+          recognitionStatus.textContent = '録音中です。話し終えたら自動的に判定します。';
+        });
+
+        recognition.addEventListener('result', (event) => {
+          const transcript = event.results[0][0]?.transcript?.trim() ?? '';
+          recognitionText.textContent = transcript || '-';
+          recognitionTarget.textContent = targetPhrase || '-';
+
+          const similarity = computeSimilarity(transcript, targetPhrase);
+          const percentage = Math.round(similarity * 100);
+          recognitionScore.textContent = Number.isNaN(percentage) ? '-' : `${percentage}%`;
+        });
+
+        recognition.addEventListener('error', (event) => {
+          recognitionStatus.textContent = `エラーが発生しました: ${event.error}`;
+          recognitionText.textContent = '-';
+          recognitionScore.textContent = '-';
+          releaseRecognitionButton();
+        });
+
+        recognition.addEventListener('nomatch', () => {
+          recognitionStatus.textContent = '音声を認識できませんでした。もう一度お試しください。';
+          recognitionText.textContent = '-';
+          recognitionScore.textContent = '-';
+        });
+
+        recognition.addEventListener('end', () => {
+          releaseRecognitionButton();
+
+          if (recognitionStatus.textContent.startsWith('録音中です')) {
+            recognitionStatus.textContent = defaultStatusMessage;
+          }
+        });
+
+        document.querySelectorAll('.recognize-phrase').forEach((button) => {
+          button.addEventListener('click', () => {
+            const parentItem = button.closest('li');
+            const translation = parentItem?.querySelector('.phrase-translation');
+            const dutchText = translation?.textContent?.trim();
+
+            if (!dutchText) {
+              return;
+            }
+
+            if (activeRecognitionButton) {
+              recognition.abort();
+              releaseRecognitionButton();
+            }
+
+            targetPhrase = dutchText;
+            recognitionTarget.textContent = dutchText;
+            recognitionText.textContent = '-';
+            recognitionScore.textContent = '-';
+
+            activeRecognitionButton = button;
+            button.disabled = true;
+            button.textContent = '録音中…';
+
+            try {
+              recognition.start();
+            } catch (error) {
+              recognitionStatus.textContent = '音声認識の開始に失敗しました。もう一度お試しください。';
+              releaseRecognitionButton();
+              targetPhrase = '';
+              recognitionTarget.textContent = '-';
+              recognitionText.textContent = '-';
+              recognitionScore.textContent = '-';
+            }
+          });
+        });
+
+        window.addEventListener('beforeunload', () => {
+          try {
+            recognition.stop();
+          } catch (error) {
+            /* noop */
+          }
+        });
+      }
     }
   </script>
 </body>
