@@ -205,8 +205,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding: 16px 18px;
-      border-radius: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
       background: var(--card-bg);
       border: 1px solid rgba(15, 23, 42, 0.08);
       box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
@@ -241,34 +241,68 @@
 
     .speech-feedback {
       flex: 1 1 280px;
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.95rem;
       background: rgba(15, 23, 42, 0.05);
-      border-radius: 14px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: 10px 12px;
       border: 1px solid rgba(15, 23, 42, 0.08);
     }
 
-    .speech-feedback-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
+    .speech-feedback-target {
+      margin: 0;
+      font-size: clamp(1.15rem, 2.8vw, 1.4rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
 
-    .speech-feedback-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .speech-feedback-live {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 0.95rem;
       color: var(--muted);
     }
 
-    .speech-feedback-value {
+    .speech-feedback-live[hidden] {
+      display: none;
+    }
+
+    .speech-feedback-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .speech-feedback-text {
       font-weight: 600;
       color: var(--fg);
-      word-break: break-word;
+    }
+
+    .speech-feedback-score {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .speech-notice {
@@ -740,22 +774,13 @@
                 >
               </div>
               <div id="speech-feedback" class="speech-feedback" aria-live="polite">
-                <div class="speech-feedback-item">
-                  <span class="speech-feedback-label">状態</span>
-                  <span id="recognition-status" class="speech-feedback-value">マイクの許可を与えてマイクアイコンを押すと発音チェックができます。</span>
-                </div>
-                <div class="speech-feedback-item">
-                  <span class="speech-feedback-label">フレーズ</span>
-                  <span id="recognition-target" class="speech-feedback-value">-</span>
-                </div>
-                <div class="speech-feedback-item">
-                  <span class="speech-feedback-label">認識結果</span>
-                  <span id="recognition-text" class="speech-feedback-value">-</span>
-                </div>
-                <div class="speech-feedback-item">
-                  <span class="speech-feedback-label">マッチ率</span>
-                  <span id="recognition-score" class="speech-feedback-value">-</span>
-                </div>
+                <p id="recognition-target" class="speech-feedback-target">-</p>
+                <p id="recognition-live" class="speech-feedback-live" hidden>
+                  <span class="speech-feedback-icon" aria-hidden="true">🎙</span>
+                  <span id="recognition-text" class="speech-feedback-text">-</span>
+                  <span id="recognition-score" class="speech-feedback-score">-</span>
+                </p>
+                <span id="recognition-status" class="visually-hidden">録音待機中です。</span>
               </div>
             </div>
             <p id="speech-recognition-notice" class="speech-notice is-hidden" aria-live="polite"></p>
@@ -1496,11 +1521,77 @@
     const recognitionTarget = document.getElementById('recognition-target');
     const recognitionText = document.getElementById('recognition-text');
     const recognitionScore = document.getElementById('recognition-score');
+    const recognitionLive = document.getElementById('recognition-live');
     const recognitionNotice = document.getElementById('speech-recognition-notice');
 
     const defaultStatusMessage =
-      recognitionStatus?.textContent?.trim() ||
-      'マイクの許可を与えてマイクアイコンを押すと発音チェックができます。';
+      recognitionStatus?.textContent?.trim() || '録音待機中です。';
+
+    let recognitionAudioContext = null;
+
+    const ensureRecognitionAudioContext = () => {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        return null;
+      }
+
+      if (!recognitionAudioContext) {
+        recognitionAudioContext = new AudioContextClass();
+      }
+
+      if (recognitionAudioContext.state === 'suspended') {
+        recognitionAudioContext.resume().catch(() => {
+          /* noop */
+        });
+      }
+
+      return recognitionAudioContext;
+    };
+
+    const playRecognitionTone = (isPerfectMatch) => {
+      const context = ensureRecognitionAudioContext();
+
+      if (!context) {
+        return;
+      }
+
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+      const now = context.currentTime;
+
+      oscillator.type = isPerfectMatch ? 'triangle' : 'sine';
+
+      if (isPerfectMatch) {
+        oscillator.frequency.setValueAtTime(880, now);
+        oscillator.frequency.exponentialRampToValueAtTime(1320, now + 0.22);
+      } else {
+        oscillator.frequency.setValueAtTime(320, now);
+        oscillator.frequency.exponentialRampToValueAtTime(220, now + 0.22);
+      }
+
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.25, now + 0.04);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      oscillator.start(now);
+      oscillator.stop(now + 0.34);
+    };
+
+    const showRecognitionLive = () => {
+      if (recognitionLive) {
+        recognitionLive.hidden = false;
+      }
+    };
+
+    const hideRecognitionLive = () => {
+      if (recognitionLive) {
+        recognitionLive.hidden = true;
+      }
+    };
 
     if (recognitionStatus) {
       recognitionStatus.dataset.defaultMessage = defaultStatusMessage;
@@ -1752,6 +1843,8 @@
         let targetPhrase = '';
 
         const releaseRecognitionButton = () => {
+          hideRecognitionLive();
+
           if (activeRecognitionButton) {
             activeRecognitionButton.disabled = false;
             activeRecognitionButton.classList.remove('is-recording');
@@ -1763,6 +1856,16 @@
         };
 
         recognition.addEventListener('start', () => {
+          showRecognitionLive();
+
+          if (recognitionText) {
+            recognitionText.textContent = '聴き取り中…';
+          }
+
+          if (recognitionScore) {
+            recognitionScore.textContent = '-';
+          }
+
           if (recognitionStatus) {
             recognitionStatus.dataset.previousStatus =
               recognitionStatus.textContent?.trim() || defaultStatusMessage;
@@ -1779,6 +1882,11 @@
           const similarity = computeSimilarity(transcript, targetPhrase);
           const percentage = Math.round(similarity * 100);
           recognitionScore.textContent = Number.isNaN(percentage) ? '-' : `${percentage}%`;
+
+          if (transcript && targetPhrase) {
+            const isPerfectMatch = !Number.isNaN(percentage) && percentage === 100;
+            playRecognitionTone(isPerfectMatch);
+          }
         });
 
         recognition.addEventListener('error', (event) => {
@@ -1787,6 +1895,7 @@
           delete recognitionStatus.dataset.previousStatus;
           recognitionText.textContent = '-';
           recognitionScore.textContent = '-';
+          hideRecognitionLive();
           releaseRecognitionButton();
         });
 
@@ -1796,6 +1905,7 @@
           delete recognitionStatus.dataset.previousStatus;
           recognitionText.textContent = '-';
           recognitionScore.textContent = '-';
+          hideRecognitionLive();
         });
 
         recognition.addEventListener('end', () => {
@@ -1809,6 +1919,8 @@
             recognitionStatus.dataset.state = 'idle';
             delete recognitionStatus.dataset.previousStatus;
           }
+
+          hideRecognitionLive();
         });
 
         const handleRecognitionClick = (event) => {
@@ -1861,6 +1973,7 @@
             recognitionTarget.textContent = '-';
             recognitionText.textContent = '-';
             recognitionScore.textContent = '-';
+            hideRecognitionLive();
           }
         };
 
