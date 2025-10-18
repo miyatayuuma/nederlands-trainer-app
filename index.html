@@ -92,6 +92,57 @@
       line-height: 1.6;
     }
 
+    .phrase-list {
+      list-style: none;
+      margin: 24px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .phrase-list li {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .phrase-original {
+      font-weight: 600;
+    }
+
+    .phrase-translation {
+      color: var(--muted);
+    }
+
+    .toggle-translation {
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+    }
+
+    .toggle-translation:hover,
+    .toggle-translation:focus {
+      background: var(--accent-dark);
+    }
+
+    .toggle-translation:focus {
+      outline: 2px solid rgba(255, 122, 89, 0.3);
+      outline-offset: 2px;
+    }
+
+    .is-hidden {
+      visibility: hidden;
+    }
+
     .placeholder {
       text-align: center;
       padding: 48px 20px;
@@ -127,13 +178,57 @@
       </ul>
     </section>
 
-    <section class="placeholder">
-      フレーズ一覧やクイズ機能などの学習コンテンツは、この領域に追加していきます。
+    <section class="card">
+      <h2>日常フレーズ集</h2>
+      <ul class="phrase-list">
+        <li>
+          <span class="phrase-original">おはようございます。</span>
+          <span class="phrase-translation is-hidden">Goedemorgen.</span>
+          <button class="toggle-translation" type="button">意味を表示</button>
+        </li>
+        <li>
+          <span class="phrase-original">ありがとうございます。</span>
+          <span class="phrase-translation is-hidden">Dank u wel.</span>
+          <button class="toggle-translation" type="button">意味を表示</button>
+        </li>
+        <li>
+          <span class="phrase-original">すみません。</span>
+          <span class="phrase-translation is-hidden">Pardon.</span>
+          <button class="toggle-translation" type="button">意味を表示</button>
+        </li>
+        <li>
+          <span class="phrase-original">駅はどこですか？</span>
+          <span class="phrase-translation is-hidden">Waar is het station?</span>
+          <button class="toggle-translation" type="button">意味を表示</button>
+        </li>
+        <li>
+          <span class="phrase-original">助けが必要です。</span>
+          <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
+          <button class="toggle-translation" type="button">意味を表示</button>
+        </li>
+      </ul>
     </section>
   </main>
 
   <footer>
     &copy; 2024 PhraseLearner. All rights reserved.
   </footer>
+
+  <script>
+    document.querySelectorAll('.toggle-translation').forEach((button) => {
+      button.addEventListener('click', () => {
+        const translation = button.previousElementSibling;
+
+        if (!translation) {
+          return;
+        }
+
+        translation.classList.toggle('is-hidden');
+        button.textContent = translation.classList.contains('is-hidden')
+          ? '意味を表示'
+          : '意味を隠す';
+      });
+    });
+  </script>
 </body>
 </html>
