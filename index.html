@@ -376,6 +376,35 @@
       color: var(--muted);
     }
 
+    .meta-box-timer {
+      gap: 8px;
+    }
+
+    .countdown-bar {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(31, 41, 51, 0.12);
+      overflow: hidden;
+    }
+
+    .countdown-bar-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      transform-origin: left center;
+      transition: width 120ms linear, background 180ms ease-in-out;
+    }
+
+    .countdown-bar-fill.is-warning {
+      background: #f59e0b;
+    }
+
+    .countdown-bar-fill.is-danger {
+      background: #ef4444;
+    }
+
     .game-controls {
       display: flex;
       flex-wrap: wrap;
@@ -1184,22 +1213,49 @@
             <div class="game-meta">
               <div class="meta-box" aria-live="polite">
                 <span class="meta-label">Stage</span>
-                <span class="meta-value"><span id="game-stage">0</span><small>段</small></span>
+                <span class="meta-value">
+                  <span id="game-stage">0</span><small>段</small>
+                </span>
               </div>
               <div class="meta-box" aria-live="polite">
                 <span class="meta-label">Score</span>
-                <span class="meta-value" id="game-score">0</span>
+                <span class="meta-value">
+                  <span id="game-score">0</span><small>pt</small>
+                </span>
               </div>
               <div class="meta-box" aria-live="polite">
                 <span class="meta-label">連続正解</span>
-                <span class="meta-value"><span id="game-streak">0</span><small id="game-best">BEST 0</small></span>
+                <span class="meta-value">
+                  <span id="game-streak">0</span><small id="game-best">BEST 0</small>
+                </span>
+              </div>
+              <div class="meta-box" aria-live="polite">
+                <span class="meta-label">正解数</span>
+                <span class="meta-value">
+                  <span id="game-correct">0</span><small>組</small>
+                </span>
+              </div>
+              <div class="meta-box" aria-live="polite">
+                <span class="meta-label">ミス</span>
+                <span class="meta-value">
+                  <span id="game-mistakes">0</span><small>回</small>
+                </span>
+              </div>
+              <div class="meta-box meta-box-timer" aria-live="polite">
+                <span class="meta-label">残り時間</span>
+                <span class="meta-value">
+                  <span id="game-time">60</span><small>秒</small>
+                </span>
+                <div class="countdown-bar" role="presentation" aria-hidden="true">
+                  <div id="game-timer-fill" class="countdown-bar-fill"></div>
+                </div>
               </div>
             </div>
             <div class="game-controls">
               <button id="game-start-button" class="game-button" type="button">ステージを始める</button>
               <button id="game-reset-button" class="game-button secondary" type="button">スコアをリセット</button>
             </div>
-            <p id="game-status" class="game-status" aria-live="polite">ステージを始めてカードをマッチさせましょう！</p>
+            <p id="game-status" class="game-status" aria-live="polite">ステージを始めて制限時間60秒以内にカードをマッチさせましょう！</p>
             <p id="game-speech-instruction" class="visually-hidden">
               オランダ語カードはタップすると発音が再生されます。音声のヒントを聞きながら対応する日本語カードを探してみましょう。
             </p>
@@ -1978,6 +2034,14 @@
     const bestDisplay = document.getElementById('game-best');
     const startButton = document.getElementById('game-start-button');
     const resetButton = document.getElementById('game-reset-button');
+    const timeDisplay = document.getElementById('game-time');
+    const countdownFill = document.getElementById('game-timer-fill');
+    const correctDisplay = document.getElementById('game-correct');
+    const mistakesDisplay = document.getElementById('game-mistakes');
+
+    const TIME_LIMIT_SECONDS = 60;
+    const TIME_LIMIT_MS = TIME_LIMIT_SECONDS * 1000;
+    let timerAnimationFrame = null;
 
     const gameState = {
       stage: 0,
@@ -1989,6 +2053,11 @@
       busy: false,
       phraseQueue: [],
       columns: null,
+      timeRemainingMs: TIME_LIMIT_MS,
+      correctMatches: 0,
+      mistakes: 0,
+      timerStartedAt: null,
+      roundActive: false,
     };
 
     const pulseElement = (element) => {
@@ -2031,6 +2100,130 @@
       if (bestDisplay) {
         bestDisplay.textContent = `BEST ${gameState.best}`;
       }
+
+      if (correctDisplay) {
+        correctDisplay.textContent = gameState.correctMatches;
+      }
+
+      if (mistakesDisplay) {
+        mistakesDisplay.textContent = gameState.mistakes;
+      }
+
+      if (timeDisplay) {
+        const seconds = Math.max(0, Math.ceil(gameState.timeRemainingMs / 1000));
+        timeDisplay.textContent = seconds.toString();
+      }
+    };
+
+    const setTimeRemaining = (remainingMs) => {
+      const clamped = Math.max(0, Math.min(TIME_LIMIT_MS, remainingMs));
+      gameState.timeRemainingMs = clamped;
+
+      if (timeDisplay) {
+        const seconds = Math.max(0, Math.ceil(clamped / 1000));
+        timeDisplay.textContent = seconds.toString();
+      }
+
+      if (countdownFill) {
+        const percentage = TIME_LIMIT_MS === 0 ? 0 : (clamped / TIME_LIMIT_MS) * 100;
+        countdownFill.style.width = `${percentage}%`;
+        countdownFill.classList.toggle('is-warning', percentage <= 50 && percentage > 20);
+        countdownFill.classList.toggle('is-danger', percentage <= 20);
+      }
+    };
+
+    const stopTimer = ({ resetToFull = false } = {}) => {
+      if (timerAnimationFrame !== null) {
+        cancelAnimationFrame(timerAnimationFrame);
+        timerAnimationFrame = null;
+      }
+
+      gameState.roundActive = false;
+      gameState.timerStartedAt = null;
+
+      if (resetToFull) {
+        setTimeRemaining(TIME_LIMIT_MS);
+      }
+    };
+
+    const handleTimeUp = () => {
+      if (gameState.matchesRemaining <= 0) {
+        return;
+      }
+
+      setTimeRemaining(0);
+      gameState.busy = true;
+      gameState.roundActive = false;
+      gameState.selection = [];
+      gameState.streak = 0;
+
+      if (gameGrid) {
+        gameGrid.querySelectorAll('.game-card').forEach((card) => {
+          card.classList.add('is-disabled');
+          card.classList.remove('is-selected');
+        });
+      }
+
+      const remainingPairs = gameState.matchesRemaining;
+      const remainingPenalty = remainingPairs * 5;
+
+      if (remainingPenalty > 0) {
+        gameState.score = Math.max(0, gameState.score - remainingPenalty);
+      }
+
+      updateScoreboard();
+
+      if (remainingPenalty > 0) {
+        pulseElement(scoreDisplay);
+      }
+
+      pulseElement(streakDisplay);
+
+      if (startButton) {
+        startButton.disabled = false;
+        startButton.textContent = 'もう一度挑戦';
+      }
+
+      const summary = `⏰ タイムアップ！${gameState.correctMatches}組正解、ミス${gameState.mistakes}回。`;
+
+      if (remainingPenalty > 0) {
+        setStatus(
+          `${summary}残り${remainingPairs}組で${remainingPenalty}点の減点…次の挑戦で挽回しよう！`
+        );
+      } else {
+        setStatus(`${summary}あと少しだったね！`);
+      }
+
+      gameState.matchesRemaining = 0;
+    };
+
+    const tickTimer = (timestamp) => {
+      if (!gameState.roundActive) {
+        return;
+      }
+
+      if (gameState.timerStartedAt === null) {
+        gameState.timerStartedAt = timestamp;
+      }
+
+      const elapsed = timestamp - gameState.timerStartedAt;
+      const remaining = TIME_LIMIT_MS - elapsed;
+
+      if (remaining <= 0) {
+        stopTimer();
+        handleTimeUp();
+        return;
+      }
+
+      setTimeRemaining(remaining);
+      timerAnimationFrame = window.requestAnimationFrame(tickTimer);
+    };
+
+    const startTimer = () => {
+      stopTimer();
+      gameState.roundActive = true;
+      gameState.timerStartedAt = null;
+      timerAnimationFrame = window.requestAnimationFrame(tickTimer);
     };
 
     const createGameCard = (phrase, lang) => {
@@ -2171,6 +2364,7 @@
     };
 
     const resetGame = (announce = true) => {
+      stopTimer({ resetToFull: true });
       gameState.stage = 0;
       gameState.score = 0;
       gameState.streak = 0;
@@ -2180,6 +2374,9 @@
       gameState.busy = false;
       gameState.phraseQueue = [];
       gameState.columns = null;
+      gameState.correctMatches = 0;
+      gameState.mistakes = 0;
+      gameState.timeRemainingMs = TIME_LIMIT_MS;
       updateScoreboard();
 
       if (gameGrid) {
@@ -2194,14 +2391,16 @@
 
       if (announce) {
         setStatus(
-          'ステージを始めてカードをマッチさせましょう！オランダ語カードをタップすると発音が流れます。'
+          `ステージを始めて制限時間${TIME_LIMIT_SECONDS}秒以内にカードをマッチさせましょう！オランダ語カードをタップすると発音が流れます。`
         );
       }
     };
 
     const stageClearFeedback = () => {
-      const bonus = 20;
-      gameState.score += bonus;
+      stopTimer();
+      const remainingSeconds = Math.max(0, Math.ceil(gameState.timeRemainingMs / 1000));
+      const timeBonus = Math.max(20, remainingSeconds * 2);
+      gameState.score += timeBonus;
       updateScoreboard();
       pulseElement(scoreDisplay);
 
@@ -2210,7 +2409,9 @@
         startButton.textContent = '次のステージへ';
       }
 
-      setStatus(`✨ ステージ${gameState.stage}クリア！ボーナス${bonus}点を獲得したよ。`);
+      setStatus(
+        `✨ ステージ${gameState.stage}クリア！${gameState.correctMatches}組正解、ミス${gameState.mistakes}回。残り${remainingSeconds}秒でボーナス${timeBonus}点を獲得したよ。`
+      );
     };
 
     let feedbackAudioContext = null;
@@ -2302,6 +2503,7 @@
 
         gameState.matchesRemaining -= 1;
         gameState.streak += 1;
+        gameState.correctMatches += 1;
 
         if (gameState.streak > gameState.best) {
           gameState.best = gameState.streak;
@@ -2312,11 +2514,16 @@
         updateScoreboard();
         pulseElement(scoreDisplay);
         pulseElement(streakDisplay);
+        pulseElement(correctDisplay);
 
         if (phrase) {
-          setStatusWithCue(`🎉 正解！「${phrase.ja}」と「${phrase.nl}」で${gained}点ゲット！`);
+          setStatusWithCue(
+            `🎉 正解！${gameState.correctMatches}組目の「${phrase.ja}」と「${phrase.nl}」で${gained}点ゲット！`
+          );
         } else {
-          setStatusWithCue('🎉 正解！すばらしい！');
+          setStatusWithCue(
+            `🎉 正解！${gameState.correctMatches}組目で${gained}点ゲット！`
+          );
         }
 
         gameState.selection = [];
@@ -2338,10 +2545,27 @@
       }
 
       playMatchFeedbackTone(false);
+      gameState.mistakes += 1;
+      const penalty = Math.max(5, 3 + gameState.stage * 2);
+
+      if (penalty > 0) {
+        gameState.score = Math.max(0, gameState.score - penalty);
+      }
+
       gameState.streak = 0;
       updateScoreboard();
       pulseElement(streakDisplay);
-      setStatusWithCue('あれ？違うみたい。落ち着いてもう一度！');
+      pulseElement(mistakesDisplay);
+
+      if (penalty > 0) {
+        pulseElement(scoreDisplay);
+      }
+
+      setStatusWithCue(
+        penalty > 0
+          ? `😅 ミス${gameState.mistakes}回目。${penalty}点減点だけど、まだ巻き返せるよ！`
+          : `😅 ミス${gameState.mistakes}回目。次は当ててみよう！`
+      );
 
       const [firstCard, secondCard] = [first.card, second.card];
 
@@ -2354,7 +2578,7 @@
     };
 
     const handleCardSelection = (card) => {
-      if (!card || gameState.busy) {
+      if (!card || gameState.busy || !gameState.roundActive) {
         return;
       }
 
@@ -2408,6 +2632,8 @@
         return;
       }
 
+      stopTimer({ resetToFull: true });
+
       const nextStage = gameState.stage + 1;
       const pairCount = stagePairCount(nextStage);
 
@@ -2438,6 +2664,8 @@
       gameState.matchesRemaining = selectedPairs.length;
       gameState.selection = [];
       gameState.busy = false;
+      gameState.correctMatches = 0;
+      gameState.mistakes = 0;
 
       if (startButton) {
         startButton.disabled = true;
@@ -2445,8 +2673,9 @@
       }
 
       updateScoreboard();
+      startTimer();
       setStatus(
-        `ステージ${gameState.stage}スタート！同じ意味のカードをタップしてね。オランダ語カードはタップで発音が流れるよ。`
+        `ステージ${gameState.stage}スタート！制限時間${TIME_LIMIT_SECONDS}秒以内に同じ意味のカードをタップしてね。オランダ語カードはタップで発音が流れるよ。`
       );
     };
 
