@@ -263,6 +263,240 @@
       font-size: 1.35rem;
     }
 
+    .game-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .game-intro p {
+      margin: 0;
+      line-height: 1.6;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .game-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      align-items: center;
+    }
+
+    .game-meta .meta-box {
+      border-radius: 14px;
+      background: rgba(31, 41, 51, 0.06);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .meta-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .meta-value small {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .game-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .game-button {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #ffffff;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    .game-button:hover,
+    .game-button:focus-visible {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .game-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .game-button.secondary {
+      background: rgba(31, 41, 51, 0.08);
+      color: var(--fg);
+    }
+
+    .game-status {
+      min-height: 1.4em;
+      font-size: 0.95rem;
+      color: var(--fg);
+    }
+
+    .game-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .game-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-radius: 18px;
+      padding: 16px;
+      background: var(--card-bg);
+      border: 2px solid transparent;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+      transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .game-card[data-lang="ja"] {
+      background: linear-gradient(135deg, rgba(255, 225, 215, 0.45), rgba(255, 255, 255, 0.8));
+    }
+
+    .game-card[data-lang="nl"] {
+      background: linear-gradient(135deg, rgba(210, 230, 255, 0.4), rgba(255, 255, 255, 0.85));
+    }
+
+    .game-card-main {
+      border: none;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--fg);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .game-card[data-lang="nl"] .game-card-main {
+      font-size: 1rem;
+    }
+
+    .game-card-main:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .game-card-label {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .game-card-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .card-action {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(31, 41, 51, 0.12);
+      color: var(--fg);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .card-action:hover,
+    .card-action:focus-visible {
+      background: rgba(31, 41, 51, 0.2);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .card-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .game-card-hint {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      white-space: pre-wrap;
+      text-align: center;
+      min-height: 1.3em;
+    }
+
+    .game-card.is-selected {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .game-card.is-matched {
+      border-color: var(--accent);
+      animation: cardMatch 520ms ease;
+      box-shadow: 0 16px 32px rgba(255, 122, 89, 0.32);
+    }
+
+    .game-card.is-disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .score-pulse {
+      animation: scorePulse 420ms ease;
+    }
+
+    @keyframes scorePulse {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.15);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes cardMatch {
+      0% {
+        transform: scale(0.96);
+      }
+
+      60% {
+        transform: scale(1.08);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
     .phrase-table {
       width: 100%;
       border-collapse: collapse;
@@ -295,6 +529,29 @@
     }
 
     @media (max-width: 640px) {
+      .game-meta {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+
+      .game-card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+      }
+
+      .game-card {
+        padding: 14px;
+      }
+
+      .game-card-main {
+        font-size: 1.1rem;
+        padding: 18px 12px;
+      }
+
+      .card-action {
+        font-size: 0.9rem;
+        padding: 7px 14px;
+      }
+
       .phrase-table thead {
         display: none;
       }
@@ -329,6 +586,30 @@
         letter-spacing: 0.08em;
         color: var(--muted);
         margin-bottom: 4px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .game-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .game-card {
+        padding: 12px;
+      }
+
+      .game-card-main {
+        font-size: 1.2rem;
+      }
+
+      .game-card-actions {
+        gap: 6px;
       }
     }
 
@@ -407,43 +688,7 @@
               <label for="speech-rate">再生速度: <span id="speech-rate-value">1.0x</span></label>
               <input type="range" id="speech-rate" name="speech-rate" min="0.6" max="1.4" step="0.1" value="1">
             </div>
-            <ul class="phrase-list">
-              <li>
-                <span class="phrase-original">おはようございます。</span>
-                <span class="phrase-translation is-hidden">Goedemorgen.</span>
-                <button class="speak-phrase" type="button">再生</button>
-                <button class="recognize-phrase" type="button">発声テスト</button>
-                <button class="toggle-translation" type="button">訳を表示</button>
-              </li>
-              <li>
-                <span class="phrase-original">ありがとうございます。</span>
-                <span class="phrase-translation is-hidden">Dank u wel.</span>
-                <button class="speak-phrase" type="button">再生</button>
-                <button class="recognize-phrase" type="button">発声テスト</button>
-                <button class="toggle-translation" type="button">訳を表示</button>
-              </li>
-              <li>
-                <span class="phrase-original">すみません。</span>
-                <span class="phrase-translation is-hidden">Pardon.</span>
-                <button class="speak-phrase" type="button">再生</button>
-                <button class="recognize-phrase" type="button">発声テスト</button>
-                <button class="toggle-translation" type="button">訳を表示</button>
-              </li>
-              <li>
-                <span class="phrase-original">駅はどこですか？</span>
-                <span class="phrase-translation is-hidden">Waar is het station?</span>
-                <button class="speak-phrase" type="button">再生</button>
-                <button class="recognize-phrase" type="button">発声テスト</button>
-                <button class="toggle-translation" type="button">訳を表示</button>
-              </li>
-              <li>
-                <span class="phrase-original">助けが必要です。</span>
-                <span class="phrase-translation is-hidden">Ik heb hulp nodig.</span>
-                <button class="speak-phrase" type="button">再生</button>
-                <button class="recognize-phrase" type="button">発声テスト</button>
-                <button class="toggle-translation" type="button">訳を表示</button>
-              </li>
-            </ul>
+            <ul class="phrase-list" data-phrase-list></ul>
             <div id="recognition-panel" class="recognition-panel is-hidden" aria-live="polite">
               <p class="recognition-status"><strong>状態:</strong> <span id="recognition-status">マイクの許可を与えて「発声テスト」を押すと発音チェックができます。</span></p>
               <p class="recognition-target"><strong>目標フレーズ:</strong> <span id="recognition-target">-</span></p>
@@ -558,14 +803,38 @@
           hidden
           aria-hidden="true"
         >
-          <section class="card">
-            <h2>フレーズチャレンジモード（準備中）</h2>
-            <p>
-              クイズやテンポ良い早押し対戦など、遊びながら定番フレーズを定着させる要素を順次追加予定です。
-            </p>
-            <p>
-              現在は「フレーズ学習モード」で発音チェックやフレーズ暗記の土台づくりを行い、公開を楽しみにお待ちください。
-            </p>
+          <section class="card game-section">
+            <div class="game-intro">
+              <h2>フレーズチャレンジモード</h2>
+              <p>
+                日本語カードとオランダ語カードをタップしてペアを見つける、テンポの良いマッチングゲームです。耳と目を同時に使いながら、短時間で何度も遊んでみましょう。
+              </p>
+            </div>
+            <div class="game-meta">
+              <div class="meta-box" aria-live="polite">
+                <span class="meta-label">Stage</span>
+                <span class="meta-value"><span id="game-stage">0</span><small>段</small></span>
+              </div>
+              <div class="meta-box" aria-live="polite">
+                <span class="meta-label">Score</span>
+                <span class="meta-value" id="game-score">0</span>
+              </div>
+              <div class="meta-box" aria-live="polite">
+                <span class="meta-label">連続正解</span>
+                <span class="meta-value"><span id="game-streak">0</span><small id="game-best">BEST 0</small></span>
+              </div>
+            </div>
+            <div class="game-controls">
+              <button id="game-start-button" class="game-button" type="button">ステージを始める</button>
+              <button id="game-reset-button" class="game-button secondary" type="button">スコアをリセット</button>
+            </div>
+            <p id="game-status" class="game-status" aria-live="polite">ステージを始めてカードをマッチさせましょう！</p>
+            <div
+              id="game-grid"
+              class="game-card-grid"
+              aria-label="日本語とオランダ語のカードをマッチさせるグリッド"
+              aria-live="polite"
+            ></div>
           </section>
         </section>
       </div>
@@ -577,6 +846,193 @@
   </footer>
 
   <script>
+    const PHRASE_DATA = [
+      {
+        id: 'greet-morning',
+        category: 'greetings',
+        ja: 'おはようございます。',
+        nl: 'Goedemorgen.',
+        hint: 'フーデモルヘン /ɣudəˈmɔr.ɣə(n)/',
+        featured: true,
+      },
+      {
+        id: 'greet-day',
+        category: 'greetings',
+        ja: 'こんにちは。',
+        nl: 'Goedemiddag.',
+        hint: 'フーデミダフ /ɣudəˈmɪdɑx/',
+      },
+      {
+        id: 'greet-evening',
+        category: 'greetings',
+        ja: 'こんばんは。',
+        nl: 'Goedenavond.',
+        hint: 'フーデナーフォント /ɣudəˈnaːvɔnt/',
+      },
+      {
+        id: 'greet-meet',
+        category: 'greetings',
+        ja: 'はじめまして。',
+        nl: 'Aangenaam.',
+        hint: 'アーネナーム /ˈaːŋɣənaːm/',
+      },
+      {
+        id: 'greet-bye',
+        category: 'greetings',
+        ja: 'さようなら。',
+        nl: 'Tot ziens.',
+        hint: 'トッツィンス /tɔt ˈzins/',
+      },
+      {
+        id: 'greet-later',
+        category: 'greetings',
+        ja: 'また後でね。',
+        nl: 'Tot later.',
+        hint: 'トト ラーテル /tɔt ˈlaːtər/',
+      },
+      {
+        id: 'polite-thanks',
+        category: 'essentials',
+        ja: 'ありがとうございます。',
+        nl: 'Dank u wel.',
+        hint: 'ダンク ウ ヴェル /dɑŋk y ʋɛl/',
+        featured: true,
+      },
+      {
+        id: 'polite-sorry',
+        category: 'essentials',
+        ja: 'すみません。',
+        nl: 'Pardon.',
+        hint: 'パルドン /ˈpɑr.dɔn/',
+        featured: true,
+      },
+      {
+        id: 'travel-station',
+        category: 'travel',
+        ja: '駅はどこですか？',
+        nl: 'Waar is het station?',
+        hint: 'ワール イス ヘット スタシオン /ʋaːr ɪs ɦət stɑˈʃɔn/',
+        featured: true,
+      },
+      {
+        id: 'travel-train',
+        category: 'travel',
+        ja: 'この列車はアムステルダム行きですか？',
+        nl: 'Gaat deze trein naar Amsterdam?',
+        hint: 'ハート デーゼ トライン ナール アムステルダム /ɣaːt ˈdeːzə trɛi̯n naːr ˌɑmstərˈdɑm/',
+      },
+      {
+        id: 'travel-ticket',
+        category: 'travel',
+        ja: '切符を2枚ください。',
+        nl: 'Mag ik twee kaartjes alstublieft?',
+        hint: 'マッ フィック トゥウェー カールチェス アルストュブリーフト /mɑx ɪk tveː ˈkaːr.cəs ˌɑlstʏˈblift/',
+      },
+      {
+        id: 'travel-checkin',
+        category: 'travel',
+        ja: 'チェックインをお願いします。',
+        nl: 'Ik wil graag inchecken.',
+        hint: 'イク ヴィル フラーフ インチェッケン /ɪk ʋɪl ɣraːx ˈɪnˌtʃɛkə(n)/',
+      },
+      {
+        id: 'travel-restaurant',
+        category: 'travel',
+        ja: 'おすすめのレストランはありますか？',
+        nl: 'Heeft u een aanbeveling voor een restaurant?',
+        hint: 'ヘーフトゥー ウン アーンベーフェイリング フォール ウン レストラン /ɦeːft y ʏn ˈaːm.beːˌveː.lɪŋ foːr ʏn ˌrɛstɔˈrɑnt/',
+      },
+      {
+        id: 'emergency-help',
+        category: 'essentials',
+        ja: '助けが必要です。',
+        nl: 'Ik heb hulp nodig.',
+        hint: 'イク ヘップ フルプ ノーディフ /ɪk ɦɛb ɦʏlp ˈnoːdɪx/',
+        featured: true,
+      },
+      {
+        id: 'travel-restroom',
+        category: 'travel',
+        ja: 'トイレはどこですか？',
+        nl: 'Waar is het toilet?',
+        hint: 'ワール イス ヘット トワレット /ʋaːr ɪs ɦət twɑˈlɛt/',
+      },
+    ];
+
+    const PHRASE_LOOKUP = new Map(PHRASE_DATA.map((phrase) => [phrase.id, phrase]));
+
+    const shuffleArray = (input) => {
+      const array = [...input];
+
+      for (let i = array.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+
+      return array;
+    };
+
+    const phraseListElement = document.querySelector('[data-phrase-list]');
+
+    const renderStudyList = () => {
+      if (!phraseListElement) {
+        return;
+      }
+
+      phraseListElement.innerHTML = '';
+
+      const featuredPhrases = PHRASE_DATA.filter((phrase) => phrase.featured);
+      const fragment = document.createDocumentFragment();
+
+      featuredPhrases.forEach((phrase) => {
+        const item = document.createElement('li');
+        item.dataset.phraseId = phrase.id;
+
+        const original = document.createElement('span');
+        original.className = 'phrase-original';
+        original.textContent = phrase.ja;
+
+        const translation = document.createElement('span');
+        translation.className = 'phrase-translation is-hidden';
+        translation.textContent = phrase.nl;
+
+        const speakButton = document.createElement('button');
+        speakButton.type = 'button';
+        speakButton.className = 'speak-phrase speak-control';
+        speakButton.dataset.speech = phrase.nl;
+        speakButton.dataset.defaultLabel = '再生';
+        speakButton.dataset.activeLabel = '再生中…';
+        speakButton.setAttribute('aria-label', `${phrase.ja} をオランダ語で再生`);
+        speakButton.textContent = '再生';
+
+        const recognizeButton = document.createElement('button');
+        recognizeButton.type = 'button';
+        recognizeButton.className = 'recognize-phrase';
+        recognizeButton.dataset.target = phrase.nl;
+        recognizeButton.setAttribute('aria-label', `${phrase.nl} を発音してみよう`);
+        recognizeButton.textContent = '発声テスト';
+
+        const toggleButton = document.createElement('button');
+        toggleButton.type = 'button';
+        toggleButton.className = 'toggle-translation';
+        toggleButton.textContent = '訳を表示';
+
+        toggleButton.addEventListener('click', () => {
+          translation.classList.toggle('is-hidden');
+          toggleButton.textContent = translation.classList.contains('is-hidden')
+            ? '訳を表示'
+            : '訳を隠す';
+        });
+
+        item.append(original, translation, speakButton, recognizeButton, toggleButton);
+        fragment.appendChild(item);
+      });
+
+      phraseListElement.appendChild(fragment);
+    };
+
+    renderStudyList();
+
     const modeContainer = document.querySelector('.main-container');
     const modeButtons = modeContainer
       ? Array.from(modeContainer.querySelectorAll('[data-mode]'))
@@ -595,7 +1051,6 @@
 
           button.setAttribute('aria-selected', String(isActive));
           button.setAttribute('tabindex', isActive ? '0' : '-1');
-
         });
 
         modePanels.forEach((panel) => {
@@ -619,27 +1074,29 @@
 
       setActiveMode(initialMode);
 
-      modeButtons.forEach((button, index) => {
+      modeButtons.forEach((button) => {
         button.addEventListener('click', () => {
           const mode = button.getAttribute('data-mode');
 
-          if (mode) {
-            setActiveMode(mode);
-            button.focus();
+          if (!mode) {
+            return;
           }
+
+          setActiveMode(mode);
         });
 
         button.addEventListener('keydown', (event) => {
-          const { key } = event;
+          const currentIndex = modeButtons.indexOf(button);
           let targetIndex = null;
 
-          if (key === 'ArrowRight' || key === 'ArrowDown') {
-            targetIndex = (index + 1) % modeButtons.length;
-          } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
-            targetIndex = (index - 1 + modeButtons.length) % modeButtons.length;
-          } else if (key === 'Home') {
+          if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+            targetIndex = (currentIndex + 1) % modeButtons.length;
+          } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+            targetIndex =
+              (currentIndex - 1 + modeButtons.length) % modeButtons.length;
+          } else if (event.key === 'Home') {
             targetIndex = 0;
-          } else if (key === 'End') {
+          } else if (event.key === 'End') {
             targetIndex = modeButtons.length - 1;
           }
 
@@ -657,21 +1114,6 @@
         });
       });
     }
-
-    document.querySelectorAll('.toggle-translation').forEach((button) => {
-      button.addEventListener('click', () => {
-        const translation = button.previousElementSibling;
-
-        if (!translation) {
-          return;
-        }
-
-        translation.classList.toggle('is-hidden');
-        button.textContent = translation.classList.contains('is-hidden')
-          ? '訳を表示'
-          : '訳を隠す';
-      });
-    });
 
     const rateSlider = document.getElementById('speech-rate');
     const rateValue = document.getElementById('speech-rate-value');
@@ -700,74 +1142,90 @@
         }
       };
 
-      refreshVoices();
-      synthesis.addEventListener('voiceschanged', refreshVoices);
-
-      const defaultSpeakLabel = '再生';
-      const activeSpeakLabel = '再生中…';
-
       const resetActiveButton = () => {
         if (activeButton) {
           activeButton.disabled = false;
-          activeButton.textContent = defaultSpeakLabel;
+          const defaultLabel = activeButton.dataset.defaultLabel ?? '再生';
+          activeButton.textContent = defaultLabel;
           activeButton = null;
         }
       };
 
-      document.querySelectorAll('.speak-phrase').forEach((button) => {
-        button.addEventListener('click', () => {
-          const parentItem = button.closest('li');
-          const translation = parentItem?.querySelector('.phrase-translation');
-          const dutchText = translation?.textContent?.trim();
+      const speakFromButton = (button) => {
+        const dutchText = button.dataset.speech?.trim();
 
-          if (!dutchText) {
-            return;
+        if (!dutchText) {
+          return;
+        }
+
+        if (!button.dataset.defaultLabel) {
+          button.dataset.defaultLabel = button.textContent;
+        }
+
+        if (synthesis.speaking || synthesis.pending) {
+          synthesis.cancel();
+        }
+
+        resetActiveButton();
+
+        const utterance = new SpeechSynthesisUtterance(dutchText);
+        utterance.lang = 'nl-NL';
+
+        if (rateSlider) {
+          utterance.rate = parseFloat(rateSlider.value) || 1;
+        }
+
+        const selectedVoice = availableVoices.find(
+          (voice) => voice.lang && voice.lang.toLowerCase().startsWith('nl')
+        );
+
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+
+        utterance.onend = () => {
+          if (activeButton === button) {
+            button.disabled = false;
+            button.textContent = button.dataset.defaultLabel ?? '再生';
+            activeButton = null;
           }
+        };
 
-          if (synthesis.speaking || synthesis.pending) {
-            synthesis.cancel();
+        utterance.onerror = () => {
+          if (activeButton === button) {
+            button.disabled = false;
+            button.textContent = button.dataset.defaultLabel ?? '再生';
+            activeButton = null;
           }
+        };
 
-          resetActiveButton();
+        activeButton = button;
+        button.disabled = true;
+        button.textContent = button.dataset.activeLabel ?? '再生中…';
 
-          const utterance = new SpeechSynthesisUtterance(dutchText);
-          utterance.lang = 'nl-NL';
+        synthesis.speak(utterance);
+      };
 
-          if (rateSlider) {
-            utterance.rate = parseFloat(rateSlider.value) || 1;
-          }
+      const handleSpeakClick = (event) => {
+        const button = event.target.closest('.speak-control');
 
-          const selectedVoice = availableVoices.find(
-            (voice) => voice.lang && voice.lang.toLowerCase().startsWith('nl')
-          );
+        if (!button) {
+          return;
+        }
 
-          if (selectedVoice) {
-            utterance.voice = selectedVoice;
-          }
+        event.preventDefault();
+        event.stopPropagation();
 
-          utterance.onend = () => {
-            if (activeButton === button) {
-              button.disabled = false;
-              button.textContent = defaultSpeakLabel;
-              activeButton = null;
-            }
-          };
+        if (availableVoices.length === 0) {
+          refreshVoices();
+        }
 
-          utterance.onerror = () => {
-            if (activeButton === button) {
-              button.disabled = false;
-              button.textContent = defaultSpeakLabel;
-              activeButton = null;
-            }
-          };
+        speakFromButton(button);
+      };
 
-          activeButton = button;
-          button.disabled = true;
-          button.textContent = activeSpeakLabel;
-
-          synthesis.speak(utterance);
-        });
-      });
+      refreshVoices();
+      synthesis.addEventListener('voiceschanged', refreshVoices);
+      document.addEventListener('click', handleSpeakClick);
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -840,13 +1298,12 @@
         recognitionNotice.textContent =
           'お使いのブラウザは音声認識に対応していません。Chromeなどの対応ブラウザでお試しください。';
         recognitionNotice.classList.remove('is-hidden');
-        if (recognitionPanel) {
-          recognitionPanel.classList.add('is-hidden');
-        }
+        recognitionPanel.classList.add('is-hidden');
       } else {
         recognitionPanel.classList.remove('is-hidden');
         recognitionNotice.textContent = '初回利用時はブラウザのマイク許可が求められます。';
         recognitionNotice.classList.remove('is-hidden');
+        recognitionStatus.textContent = defaultStatusMessage;
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'nl-NL';
@@ -900,42 +1357,54 @@
           }
         });
 
-        document.querySelectorAll('.recognize-phrase').forEach((button) => {
-          button.addEventListener('click', () => {
-            const parentItem = button.closest('li');
-            const translation = parentItem?.querySelector('.phrase-translation');
-            const dutchText = translation?.textContent?.trim();
+        const handleRecognitionClick = (event) => {
+          const button = event.target.closest('.recognize-phrase');
 
-            if (!dutchText) {
-              return;
-            }
+          if (!button) {
+            return;
+          }
 
-            if (activeRecognitionButton) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const dutchText = button.dataset.target?.trim();
+
+          if (!dutchText) {
+            return;
+          }
+
+          if (activeRecognitionButton) {
+            try {
               recognition.abort();
-              releaseRecognitionButton();
+            } catch (error) {
+              /* noop */
             }
+            releaseRecognitionButton();
+          }
 
-            targetPhrase = dutchText;
-            recognitionTarget.textContent = dutchText;
+          targetPhrase = dutchText;
+          recognitionTarget.textContent = dutchText;
+          recognitionText.textContent = '-';
+          recognitionScore.textContent = '-';
+
+          activeRecognitionButton = button;
+          button.disabled = true;
+          button.textContent = '録音中…';
+
+          try {
+            recognition.start();
+          } catch (error) {
+            recognitionStatus.textContent =
+              '音声認識の開始に失敗しました。もう一度お試しください。';
+            releaseRecognitionButton();
+            targetPhrase = '';
+            recognitionTarget.textContent = '-';
             recognitionText.textContent = '-';
             recognitionScore.textContent = '-';
+          }
+        };
 
-            activeRecognitionButton = button;
-            button.disabled = true;
-            button.textContent = '録音中…';
-
-            try {
-              recognition.start();
-            } catch (error) {
-              recognitionStatus.textContent = '音声認識の開始に失敗しました。もう一度お試しください。';
-              releaseRecognitionButton();
-              targetPhrase = '';
-              recognitionTarget.textContent = '-';
-              recognitionText.textContent = '-';
-              recognitionScore.textContent = '-';
-            }
-          });
-        });
+        document.addEventListener('click', handleRecognitionClick);
 
         window.addEventListener('beforeunload', () => {
           try {
@@ -946,6 +1415,398 @@
         });
       }
     }
+
+    const gameGrid = document.getElementById('game-grid');
+    const gameStatus = document.getElementById('game-status');
+    const stageDisplay = document.getElementById('game-stage');
+    const scoreDisplay = document.getElementById('game-score');
+    const streakDisplay = document.getElementById('game-streak');
+    const bestDisplay = document.getElementById('game-best');
+    const startButton = document.getElementById('game-start-button');
+    const resetButton = document.getElementById('game-reset-button');
+
+    const gameState = {
+      stage: 0,
+      score: 0,
+      streak: 0,
+      best: 0,
+      matchesRemaining: 0,
+      selection: [],
+      busy: false,
+    };
+
+    const pulseElement = (element) => {
+      if (!element) {
+        return;
+      }
+
+      element.classList.remove('score-pulse');
+      void element.offsetWidth;
+      element.classList.add('score-pulse');
+    };
+
+    const stagePairCount = (stageNumber) =>
+      Math.min(3 + stageNumber, Math.min(6, PHRASE_DATA.length));
+
+    const setStatus = (message) => {
+      if (gameStatus) {
+        gameStatus.textContent = message;
+      }
+    };
+
+    const updateScoreboard = () => {
+      if (stageDisplay) {
+        stageDisplay.textContent = gameState.stage;
+      }
+
+      if (scoreDisplay) {
+        scoreDisplay.textContent = gameState.score;
+      }
+
+      if (streakDisplay) {
+        streakDisplay.textContent = gameState.streak;
+      }
+
+      if (bestDisplay) {
+        bestDisplay.textContent = `BEST ${gameState.best}`;
+      }
+    };
+
+    const buildHintMessage = (phrase, lang) => {
+      if (!phrase) {
+        return '';
+      }
+
+      if (lang === 'ja') {
+        let hint = `オランダ語: ${phrase.nl}`;
+
+        if (phrase.hint) {
+          hint += `\n発音ヒント: ${phrase.hint}`;
+        }
+
+        return hint;
+      }
+
+      let hint = `日本語: ${phrase.ja}`;
+
+      if (phrase.hint) {
+        hint += `\n発音ヒント: ${phrase.hint}`;
+      }
+
+      return hint;
+    };
+
+    const createGameCard = (phrase, lang) => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.dataset.pairId = phrase.id;
+      card.dataset.lang = lang;
+
+      const mainButton = document.createElement('button');
+      mainButton.type = 'button';
+      mainButton.className = 'game-card-main';
+
+      const labelText = lang === 'ja' ? '日本語' : 'オランダ語';
+      const displayText = lang === 'ja' ? phrase.ja : phrase.nl;
+      mainButton.setAttribute('aria-label', `${labelText}カード: ${displayText}`);
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'game-card-text';
+      textSpan.textContent = displayText;
+
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'game-card-label';
+      labelSpan.textContent = labelText;
+
+      mainButton.append(textSpan, labelSpan);
+
+      const actions = document.createElement('div');
+      actions.className = 'game-card-actions';
+
+      const speakButton = document.createElement('button');
+      speakButton.type = 'button';
+      speakButton.className = 'card-action speak-control';
+      speakButton.dataset.speech = phrase.nl;
+      speakButton.dataset.defaultLabel = '🔊';
+      speakButton.dataset.activeLabel = '🔄';
+      speakButton.setAttribute('aria-label', `${phrase.ja} のオランダ語を再生`);
+      speakButton.textContent = '🔊';
+
+      const hintButton = document.createElement('button');
+      hintButton.type = 'button';
+      hintButton.className = 'card-action card-hint';
+      hintButton.setAttribute('aria-expanded', 'false');
+      hintButton.textContent = 'ヒント';
+
+      actions.append(speakButton, hintButton);
+
+      const hintText = document.createElement('p');
+      hintText.className = 'game-card-hint';
+      hintText.hidden = true;
+
+      card.append(mainButton, actions, hintText);
+
+      return card;
+    };
+
+    const resetGame = (announce = true) => {
+      gameState.stage = 0;
+      gameState.score = 0;
+      gameState.streak = 0;
+      gameState.best = 0;
+      gameState.matchesRemaining = 0;
+      gameState.selection = [];
+      gameState.busy = false;
+      updateScoreboard();
+
+      if (gameGrid) {
+        gameGrid.innerHTML = '';
+      }
+
+      if (startButton) {
+        startButton.disabled = false;
+        startButton.textContent = 'ステージを始める';
+      }
+
+      if (announce) {
+        setStatus('ステージを始めてカードをマッチさせましょう！');
+      }
+    };
+
+    const stageClearFeedback = () => {
+      const bonus = 20;
+      gameState.score += bonus;
+      updateScoreboard();
+      pulseElement(scoreDisplay);
+
+      if (startButton) {
+        startButton.disabled = false;
+        startButton.textContent = '次のステージへ';
+      }
+
+      setStatus(`✨ ステージ${gameState.stage}クリア！ボーナス${bonus}点を獲得したよ。`);
+    };
+
+    const evaluateSelection = () => {
+      if (gameState.selection.length < 2) {
+        return;
+      }
+
+      gameState.busy = true;
+
+      const [first, second] = gameState.selection;
+      const isMatch = first.pairId === second.pairId && first.lang !== second.lang;
+
+      if (isMatch) {
+        const phrase = PHRASE_LOOKUP.get(first.pairId);
+        [first.card, second.card].forEach((card) => {
+          card.classList.remove('is-selected');
+          card.classList.add('is-matched', 'is-disabled');
+        });
+
+        gameState.matchesRemaining -= 1;
+        gameState.streak += 1;
+
+        if (gameState.streak > gameState.best) {
+          gameState.best = gameState.streak;
+        }
+
+        const gained = 10 + gameState.streak * 2;
+        gameState.score += gained;
+        updateScoreboard();
+        pulseElement(scoreDisplay);
+        pulseElement(streakDisplay);
+
+        if (phrase) {
+          setStatus(`🎉 正解！「${phrase.ja}」と「${phrase.nl}」で${gained}点ゲット！`);
+        } else {
+          setStatus('🎉 正解！すばらしい！');
+        }
+
+        gameState.selection = [];
+        gameState.busy = false;
+
+        if (gameState.matchesRemaining === 0) {
+          stageClearFeedback();
+        }
+
+        return;
+      }
+
+      gameState.streak = 0;
+      updateScoreboard();
+      pulseElement(streakDisplay);
+      setStatus('あれ？違うみたい。落ち着いてもう一度！');
+
+      const [firstCard, secondCard] = [first.card, second.card];
+
+      setTimeout(() => {
+        firstCard.classList.remove('is-selected');
+        secondCard.classList.remove('is-selected');
+        gameState.selection = [];
+        gameState.busy = false;
+      }, 700);
+    };
+
+    const handleCardSelection = (card) => {
+      if (!card || gameState.busy) {
+        return;
+      }
+
+      if (card.classList.contains('is-matched') || card.classList.contains('is-disabled')) {
+        return;
+      }
+
+      const pairId = card.getAttribute('data-pair-id');
+      const lang = card.getAttribute('data-lang');
+
+      if (!pairId || !lang) {
+        return;
+      }
+
+      if (gameState.selection.length === 0) {
+        gameState.selection.push({ card, pairId, lang });
+        card.classList.add('is-selected');
+        setStatus('もう1枚選んでペアを作ろう！');
+        return;
+      }
+
+      const [firstSelection] = gameState.selection;
+
+      if (firstSelection.card === card) {
+        card.classList.remove('is-selected');
+        gameState.selection = [];
+        setStatus('カードを選び直したよ。');
+        return;
+      }
+
+      if (firstSelection.lang === lang) {
+        firstSelection.card.classList.remove('is-selected');
+        gameState.selection = [{ card, pairId, lang }];
+        card.classList.add('is-selected');
+        setStatus('もう1枚選んでペアを作ろう！');
+        return;
+      }
+
+      gameState.selection.push({ card, pairId, lang });
+      card.classList.add('is-selected');
+      evaluateSelection();
+    };
+
+    const startStage = () => {
+      if (!gameGrid) {
+        return;
+      }
+
+      const nextStage = gameState.stage + 1;
+      const pairCount = stagePairCount(nextStage);
+
+      if (pairCount <= 0) {
+        setStatus('利用できるカードが足りません。');
+        return;
+      }
+
+      const selectedPairs = shuffleArray(PHRASE_DATA).slice(0, pairCount);
+      const cards = shuffleArray(
+        selectedPairs.flatMap((phrase) => [
+          { phrase, lang: 'ja' },
+          { phrase, lang: 'nl' },
+        ])
+      );
+
+      gameGrid.setAttribute('aria-busy', 'true');
+      gameGrid.innerHTML = '';
+
+      const fragment = document.createDocumentFragment();
+      cards.forEach(({ phrase, lang }) => {
+        fragment.appendChild(createGameCard(phrase, lang));
+      });
+
+      gameGrid.appendChild(fragment);
+      gameGrid.removeAttribute('aria-busy');
+
+      gameState.stage = nextStage;
+      gameState.matchesRemaining = selectedPairs.length;
+      gameState.selection = [];
+      gameState.busy = false;
+
+      if (startButton) {
+        startButton.disabled = true;
+        startButton.textContent = 'プレイ中…';
+      }
+
+      updateScoreboard();
+      setStatus(`ステージ${gameState.stage}スタート！同じ意味のカードをタップしてね。`);
+    };
+
+    if (gameGrid) {
+      gameGrid.addEventListener('click', (event) => {
+        const hintButton = event.target.closest('.card-hint');
+
+        if (hintButton) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const card = hintButton.closest('.game-card');
+          const pairId = card?.getAttribute('data-pair-id');
+          const lang = card?.getAttribute('data-lang');
+
+          if (!card || !pairId || !lang) {
+            return;
+          }
+
+          const phrase = PHRASE_LOOKUP.get(pairId);
+          const hintArea = card.querySelector('.game-card-hint');
+
+          if (!phrase || !hintArea) {
+            return;
+          }
+
+          const willShow = hintArea.hidden;
+
+          if (willShow) {
+            hintArea.textContent = buildHintMessage(phrase, lang);
+          }
+
+          hintArea.hidden = !willShow;
+          hintButton.textContent = willShow ? 'ヒントをとじる' : 'ヒント';
+          hintButton.setAttribute('aria-expanded', String(willShow));
+          setStatus(willShow ? 'ヒントを参考にしてペアを探してみよう！' : 'ヒントを閉じました。');
+
+          return;
+        }
+
+        const mainButton = event.target.closest('.game-card-main');
+
+        if (mainButton) {
+          event.preventDefault();
+          const card = mainButton.closest('.game-card');
+          handleCardSelection(card);
+        }
+      });
+    }
+
+    if (startButton) {
+      startButton.addEventListener('click', () => {
+        if (startButton.disabled) {
+          return;
+        }
+
+        startStage();
+      });
+    }
+
+    if (resetButton) {
+      resetButton.addEventListener('click', () => {
+        resetGame();
+        if (startButton) {
+          startButton.focus();
+        }
+      });
+    }
+
+    resetGame();
   </script>
+
 </body>
 </html>
