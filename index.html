@@ -1843,8 +1843,6 @@
         let targetPhrase = '';
 
         const releaseRecognitionButton = () => {
-          hideRecognitionLive();
-
           if (activeRecognitionButton) {
             activeRecognitionButton.disabled = false;
             activeRecognitionButton.classList.remove('is-recording');
@@ -1919,8 +1917,6 @@
             recognitionStatus.dataset.state = 'idle';
             delete recognitionStatus.dataset.previousStatus;
           }
-
-          hideRecognitionLive();
         });
 
         const handleRecognitionClick = (event) => {
@@ -1954,6 +1950,7 @@
           recognitionTarget.textContent = dutchText;
           recognitionText.textContent = '-';
           recognitionScore.textContent = '-';
+          hideRecognitionLive();
 
           activeRecognitionButton = button;
           button.disabled = true;
