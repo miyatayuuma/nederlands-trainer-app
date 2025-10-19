@@ -1817,10 +1817,47 @@
       const normalized = value.normalize('NFKC').trim();
       const slug = normalized
         .toLowerCase()
-        .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+        .replace(/[^a-z0-9]+/gi, '-')
         .replace(/^-+|-+$/g, '');
 
       return slug || normalized;
+    };
+
+    const coalesce = (value, fallback) =>
+      value === null || value === undefined ? fallback : value;
+
+    const getElementTextContent = (element) => {
+      if (!element) {
+        return '';
+      }
+
+      if (typeof element.textContent === 'string') {
+        return element.textContent;
+      }
+
+      if (typeof element.innerText === 'string') {
+        return element.innerText;
+      }
+
+      return '';
+    };
+
+    const getTrimmedElementText = (element) => getElementTextContent(element).trim();
+
+    const getTrimmedString = (value) =>
+      typeof value === 'string' ? value.trim() : '';
+
+    const getDatasetValue = (element, key, fallback) => {
+      if (!element || !element.dataset) {
+        return fallback;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(element.dataset, key)) {
+        const value = element.dataset[key];
+        return value === undefined ? fallback : value;
+      }
+
+      return fallback;
     };
 
     const isEssentialsCategory = (categoryName) =>
@@ -1841,7 +1878,7 @@
         throw new Error('埋め込みフレーズデータが見つかりません。');
       }
 
-      const content = element.textContent ?? element.innerText ?? '';
+      const content = getElementTextContent(element);
 
       if (content.trim().length === 0) {
         throw new Error('埋め込みフレーズデータが空です。');
@@ -1919,7 +1956,7 @@
       const levelSet = new Set();
 
       normalized.forEach((phrase) => {
-        const categoryName = phrase.category ?? 'その他';
+        const categoryName = coalesce(phrase.category, 'その他');
 
         phrase.scenario.forEach((scenarioName) => {
           if (!scenarioOrder.includes(scenarioName)) {
@@ -2001,7 +2038,10 @@
       };
 
       const sort = (phrases, sortKey) => {
-        const comparator = comparators[sortKey] ?? comparators.default;
+        const comparator =
+          typeof comparators[sortKey] === 'function'
+            ? comparators[sortKey]
+            : comparators.default;
         return [...phrases].sort(comparator);
       };
 
@@ -2014,7 +2054,7 @@
         const scenarioMap = new Map();
 
         phrases.forEach((phrase) => {
-          const categoryName = phrase.category ?? 'その他';
+          const categoryName = coalesce(phrase.category, 'その他');
 
           phrase.scenario.forEach((scenarioName) => {
             if (!activeScenarioNames.has(scenarioName)) {
@@ -2055,7 +2095,8 @@
         });
 
         return groupedScenarios.map((scenarioEntry) => {
-          const baseOrder = categoryOrderMap.get(scenarioEntry.name) ?? [];
+          const storedOrder = categoryOrderMap.get(scenarioEntry.name);
+          const baseOrder = Array.isArray(storedOrder) ? storedOrder : [];
           const categories = Array.from(scenarioEntry.categories.values()).sort((a, b) => {
             const orderA = baseOrder.indexOf(a.name);
             const orderB = baseOrder.indexOf(b.name);
@@ -2101,8 +2142,14 @@
 
     let phraseModel = null;
 
-    const getPhraseById = (id) =>
-      phraseModel ? phraseModel.lookup.get(id) ?? null : null;
+    const getPhraseById = (id) => {
+      if (!phraseModel || !phraseModel.lookup) {
+        return null;
+      }
+
+      const phrase = phraseModel.lookup.get(id);
+      return typeof phrase === 'undefined' ? null : phrase;
+    };
 
     const getAllPhrases = () => (phraseModel ? phraseModel.phrases : []);
 
@@ -2291,7 +2338,7 @@
         const hintCell = document.createElement('td');
         hintCell.dataset.label = 'カタカナ・発音ヒント';
         const hintSpan = document.createElement('span');
-        hintSpan.textContent = phrase.hint ?? '―';
+        hintSpan.textContent = coalesce(phrase.hint, '―');
         hintCell.appendChild(hintSpan);
 
         row.appendChild(jaCell);
@@ -2360,7 +2407,7 @@
 
         const categoryMap = new Map();
         phrases.forEach((phrase) => {
-          const categoryName = phrase.category ?? '基本表現';
+          const categoryName = coalesce(phrase.category, '基本表現');
           if (!categoryMap.has(categoryName)) {
             categoryMap.set(categoryName, []);
           }
@@ -2702,7 +2749,12 @@
             event.preventDefault();
 
             const targetButton = modeButtons[targetIndex];
-            const mode = targetButton?.getAttribute('data-mode');
+
+            if (!targetButton) {
+              return;
+            }
+
+            const mode = targetButton.getAttribute('data-mode');
 
             if (mode) {
               setActiveMode(mode);
@@ -2726,7 +2778,7 @@
     let speakDutchPhrase = null;
 
     const defaultStatusMessage =
-      recognitionStatus?.textContent?.trim() || '録音待機中です。';
+      getTrimmedElementText(recognitionStatus) || '録音待機中です。';
 
     let recognitionAudioContext = null;
 
@@ -2853,7 +2905,7 @@
         }
 
         recognitionStatus.dataset.previousStatus =
-          recognitionStatus.textContent?.trim() || defaultStatusMessage;
+          getTrimmedElementText(recognitionStatus) || defaultStatusMessage;
         recognitionStatus.dataset.state = 'speaking';
         recognitionStatus.textContent = '再生中です…';
       };
@@ -2874,8 +2926,11 @@
         if (activeButton) {
           activeButton.disabled = false;
           activeButton.classList.remove('is-active');
-          const defaultLabel =
-            activeButton.dataset.defaultLabel ?? 'オランダ語フレーズを再生';
+          const defaultLabel = getDatasetValue(
+            activeButton,
+            'defaultLabel',
+            'オランダ語フレーズを再生'
+          );
           activeButton.setAttribute('aria-label', defaultLabel);
           activeButton = null;
         }
@@ -2887,7 +2942,8 @@
         }
 
         const phrase = getPhraseById(phraseId);
-        const dutchText = phrase?.nl?.trim();
+        const dutchText =
+          phrase && typeof phrase.nl === 'string' ? phrase.nl.trim() : '';
 
         if (!phrase || !dutchText) {
           return false;
@@ -2942,7 +2998,7 @@
           activeButton = triggerButton;
           triggerButton.disabled = true;
           triggerButton.classList.add('is-active');
-          const activeLabel = triggerButton.dataset.activeLabel ?? '再生中…';
+          const activeLabel = getDatasetValue(triggerButton, 'activeLabel', '再生中…');
           triggerButton.setAttribute('aria-label', activeLabel);
         }
 
@@ -3051,166 +3107,181 @@
           recognitionStatus.textContent = '音声認識は利用できません。';
           recognitionStatus.dataset.state = 'idle';
           delete recognitionStatus.dataset.previousStatus;
-          return;
-        }
-
-        speechFeedback.classList.remove('is-hidden');
-        recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
-        recognitionNotice.classList.remove('is-hidden');
-        recognitionStatus.textContent = defaultStatusMessage;
-        recognitionStatus.dataset.state = 'idle';
-        delete recognitionStatus.dataset.previousStatus;
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'nl-NL';
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        let activeRecognitionButton = null;
-        let targetPhrase = '';
-
-        const releaseRecognitionButton = () => {
-          if (activeRecognitionButton) {
-            activeRecognitionButton.disabled = false;
-            activeRecognitionButton.classList.remove('is-recording');
-            const defaultLabel =
-              activeRecognitionButton.dataset.defaultLabel ?? 'オランダ語フレーズの発声をテスト';
-            activeRecognitionButton.setAttribute('aria-label', defaultLabel);
-            activeRecognitionButton = null;
-          }
-        };
-
-        recognition.addEventListener('start', () => {
-          showRecognitionLive();
-
-          if (recognitionText) {
-            recognitionText.textContent = '聴き取り中…';
-          }
-
-          if (recognitionScore) {
-            recognitionScore.textContent = '-';
-          }
-
-          if (recognitionStatus) {
-            recognitionStatus.dataset.previousStatus =
-              recognitionStatus.textContent?.trim() || defaultStatusMessage;
-            recognitionStatus.dataset.state = 'recognition';
-            recognitionStatus.textContent = '録音中です。話し終えたら自動的に判定します。';
-          }
-        });
-
-        recognition.addEventListener('result', (event) => {
-          const transcript = event.results[0][0]?.transcript?.trim() ?? '';
-          recognitionText.textContent = transcript || '-';
-          recognitionTarget.textContent = targetPhrase || '-';
-
-          const similarity = computeSimilarity(transcript, targetPhrase);
-          const percentage = Math.round(similarity * 100);
-          recognitionScore.textContent = Number.isNaN(percentage) ? '-' : `${percentage}%`;
-
-          if (transcript && targetPhrase) {
-            const isPerfectMatch = !Number.isNaN(percentage) && percentage === 100;
-            playRecognitionTone(isPerfectMatch);
-          }
-        });
-
-        recognition.addEventListener('error', (event) => {
-          recognitionStatus.textContent = `エラーが発生しました: ${event.error}`;
+        } else {
+          speechFeedback.classList.remove('is-hidden');
+          recognitionNotice.textContent = '初回利用時はマイクアイコンを押す際にブラウザのマイク許可が求められます。';
+          recognitionNotice.classList.remove('is-hidden');
+          recognitionStatus.textContent = defaultStatusMessage;
           recognitionStatus.dataset.state = 'idle';
           delete recognitionStatus.dataset.previousStatus;
-          recognitionText.textContent = '-';
-          recognitionScore.textContent = '-';
-          hideRecognitionLive();
-          releaseRecognitionButton();
-        });
 
-        recognition.addEventListener('nomatch', () => {
-          recognitionStatus.textContent = '音声を認識できませんでした。もう一度お試しください。';
-          recognitionStatus.dataset.state = 'idle';
-          delete recognitionStatus.dataset.previousStatus;
-          recognitionText.textContent = '-';
-          recognitionScore.textContent = '-';
-          hideRecognitionLive();
-        });
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'nl-NL';
+          recognition.continuous = false;
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
 
-        recognition.addEventListener('end', () => {
-          releaseRecognitionButton();
+          let activeRecognitionButton = null;
+          let targetPhrase = '';
 
-          if (recognitionStatus) {
-            if (recognitionStatus.dataset.state === 'recognition') {
-              recognitionStatus.textContent =
-                recognitionStatus.dataset.previousStatus || defaultStatusMessage;
+          const releaseRecognitionButton = () => {
+            if (activeRecognitionButton) {
+              activeRecognitionButton.disabled = false;
+              activeRecognitionButton.classList.remove('is-recording');
+              const defaultLabel = getDatasetValue(
+                activeRecognitionButton,
+                'defaultLabel',
+                'オランダ語フレーズの発声をテスト'
+              );
+              activeRecognitionButton.setAttribute('aria-label', defaultLabel);
+              activeRecognitionButton = null;
             }
+          };
+
+          recognition.addEventListener('start', () => {
+            showRecognitionLive();
+
+            if (recognitionText) {
+              recognitionText.textContent = '聴き取り中…';
+            }
+
+            if (recognitionScore) {
+              recognitionScore.textContent = '-';
+            }
+
+            if (recognitionStatus) {
+              const previousStatus =
+                getTrimmedElementText(recognitionStatus) || defaultStatusMessage;
+              recognitionStatus.dataset.previousStatus = previousStatus;
+              recognitionStatus.dataset.state = 'recognition';
+              recognitionStatus.textContent = '録音中です。話し終えたら自動的に判定します。';
+            }
+          });
+
+          recognition.addEventListener('result', (event) => {
+            let transcript = '';
+            const results = event.results;
+
+            if (
+              results &&
+              results[0] &&
+              results[0][0] &&
+              typeof results[0][0].transcript === 'string'
+            ) {
+              transcript = results[0][0].transcript.trim();
+            }
+
+            recognitionText.textContent = transcript || '-';
+            recognitionTarget.textContent = targetPhrase || '-';
+
+            const similarity = computeSimilarity(transcript, targetPhrase);
+            const percentage = Math.round(similarity * 100);
+            recognitionScore.textContent = Number.isNaN(percentage) ? '-' : `${percentage}%`;
+
+            if (transcript && targetPhrase) {
+              const isPerfectMatch = !Number.isNaN(percentage) && percentage === 100;
+              playRecognitionTone(isPerfectMatch);
+            }
+          });
+
+          recognition.addEventListener('error', (event) => {
+            recognitionStatus.textContent = `エラーが発生しました: ${event.error}`;
             recognitionStatus.dataset.state = 'idle';
             delete recognitionStatus.dataset.previousStatus;
-          }
-        });
-
-        const handleRecognitionClick = (event) => {
-          const button = event.target.closest('.recognize-control');
-
-          if (!button) {
-            return;
-          }
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          const phraseId = button.dataset.phraseId;
-          const phrase = phraseId ? getPhraseById(phraseId) : null;
-          const dutchText = phrase?.nl?.trim();
-
-          if (!phrase || !dutchText) {
-            return;
-          }
-
-          if (activeRecognitionButton) {
-            try {
-              recognition.abort();
-            } catch (error) {
-              /* noop */
-            }
-            releaseRecognitionButton();
-          }
-
-          targetPhrase = dutchText;
-          recognitionTarget.textContent = dutchText;
-          recognitionText.textContent = '-';
-          recognitionScore.textContent = '-';
-          hideRecognitionLive();
-
-          activeRecognitionButton = button;
-          button.disabled = true;
-          button.classList.add('is-recording');
-          const activeLabel = button.dataset.activeLabel ?? '録音中…';
-          button.setAttribute('aria-label', activeLabel);
-
-          try {
-            recognition.start();
-          } catch (error) {
-            recognitionStatus.textContent =
-              '音声認識の開始に失敗しました。もう一度お試しください。';
-            recognitionStatus.dataset.state = 'idle';
-            delete recognitionStatus.dataset.previousStatus;
-            releaseRecognitionButton();
-            targetPhrase = '';
-            recognitionTarget.textContent = '-';
             recognitionText.textContent = '-';
             recognitionScore.textContent = '-';
             hideRecognitionLive();
-          }
-        };
+            releaseRecognitionButton();
+          });
 
-        document.addEventListener('click', handleRecognitionClick);
+          recognition.addEventListener('nomatch', () => {
+            recognitionStatus.textContent = '音声を認識できませんでした。もう一度お試しください。';
+            recognitionStatus.dataset.state = 'idle';
+            delete recognitionStatus.dataset.previousStatus;
+            recognitionText.textContent = '-';
+            recognitionScore.textContent = '-';
+            hideRecognitionLive();
+          });
 
-        window.addEventListener('beforeunload', () => {
-          try {
-            recognition.stop();
-          } catch (error) {
-            /* noop */
-          }
-        });
+          recognition.addEventListener('end', () => {
+            releaseRecognitionButton();
+
+            if (recognitionStatus) {
+              if (recognitionStatus.dataset.state === 'recognition') {
+                recognitionStatus.textContent =
+                  recognitionStatus.dataset.previousStatus || defaultStatusMessage;
+              }
+              recognitionStatus.dataset.state = 'idle';
+              delete recognitionStatus.dataset.previousStatus;
+            }
+          });
+
+          const handleRecognitionClick = (event) => {
+            const button = event.target.closest('.recognize-control');
+
+            if (!button) {
+              return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const phraseId = button.dataset.phraseId;
+            const phrase = phraseId ? getPhraseById(phraseId) : null;
+            const dutchText =
+              phrase && typeof phrase.nl === 'string' ? phrase.nl.trim() : '';
+
+            if (!phrase || !dutchText) {
+              return;
+            }
+
+            if (activeRecognitionButton) {
+              try {
+                recognition.abort();
+              } catch (error) {
+                /* noop */
+              }
+              releaseRecognitionButton();
+            }
+
+            targetPhrase = dutchText;
+            recognitionTarget.textContent = dutchText;
+            recognitionText.textContent = '-';
+            recognitionScore.textContent = '-';
+            hideRecognitionLive();
+
+            activeRecognitionButton = button;
+            button.disabled = true;
+            button.classList.add('is-recording');
+            const activeLabel = getDatasetValue(button, 'activeLabel', '録音中…');
+            button.setAttribute('aria-label', activeLabel);
+
+            try {
+              recognition.start();
+            } catch (error) {
+              recognitionStatus.textContent =
+                '音声認識の開始に失敗しました。もう一度お試しください。';
+              recognitionStatus.dataset.state = 'idle';
+              delete recognitionStatus.dataset.previousStatus;
+              releaseRecognitionButton();
+              targetPhrase = '';
+              recognitionTarget.textContent = '-';
+              recognitionText.textContent = '-';
+              recognitionScore.textContent = '-';
+              hideRecognitionLive();
+            }
+          };
+
+          document.addEventListener('click', handleRecognitionClick);
+
+          window.addEventListener('beforeunload', () => {
+            try {
+              recognition.stop();
+            } catch (error) {
+              /* noop */
+            }
+          });
+        }
       }
     }
 
